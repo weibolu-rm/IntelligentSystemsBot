@@ -21,7 +21,7 @@ Install [Apache Jena](https://jena.apache.org/index.html)
 For Arch users, a package is available in the [AUR](https://aur.archlinux.org/packages/apache-jena-fuseki)
 `yay -S apache-jena-fuseki`
 
-```
+```shell
 cd scripts
 chmod +x fuseki-server-start.sh
 ./fuseki-server-start.sh
