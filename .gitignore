@@ -1,0 +1,13 @@
+venv/
+
+
+
+
+/* data stuff */
+*.ttl
+*.csv
+
+fuseki server 
+run/
+Data*/
+*.lock
