@@ -1,5 +1,6 @@
 import os
-from rdflib import Graph
+from rdflib import Graph, URIRef, Literal
+from rdflib.namespace import FOAF, RDF
 from pathlib import Path
 import pandas as pd
 import subprocess
@@ -24,14 +25,29 @@ class DataBuilder:
         # EXAMPLE OF SERIALIZING EXISTING DATA
         g = Graph()
         g.parse("http://dbpedia.org/resource/Concordia_University")
-        g.serialize(destination= self.rdf_dir / "concordia.ttl")
+        g.serialize(destination = self.rdf_dir / "concordia.ttl")
 
     def load_data(self):
         # THIS IS AN EXAMPLE, A BETTER THING TO DO WOULD BE TO POPULATE A GRAPH
-        data = {}
-        for f in os.listdir("data"):
+        g = Graph()
+
+        # only reading first file for now
+        for f in os.listdir("data")[:-1]:
+            print(f"DATA FROM {f}")
+
             data = pd.read_csv(self.data_dir / f"{f}", encoding="unicode_escape")
             print(data.head())
+
+            for _, row in data.iterrows():
+                # obviously don't use FOAF person but rather a custom class for course
+                _course = URIRef(f"http://example.org/people/{row['Course ID']}")
+                g.add((_course, RDF.type, FOAF.Person))
+                g.add((_course, FOAF.name, Literal(row["Long Title"])))
+                
+            g.serialize(destination = self.rdf_dir / "courses.ttl")
+            
+
+
 
 
 if __name__ == "__main__":
