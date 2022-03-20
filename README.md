@@ -12,7 +12,7 @@ pip install -r requirements/requirements.txt
 
 run example program
 ```shell
-python rdf.py
+python src/rdf.py
 ```
 
 ## run fuseki server

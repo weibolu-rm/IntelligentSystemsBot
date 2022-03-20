@@ -1,13 +1,14 @@
 venv/
-
+__pycache__/
 
 
 
 /* data stuff */
 *.ttl
 *.csv
+*.json
 
-fuseki server 
+/* fuseki server */ 
 run/
 Data*/
 *.lock
