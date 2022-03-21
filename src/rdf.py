@@ -69,6 +69,12 @@ class DataBuilder:
         g.add((_prerequisites_property, RDFS.label, Literal("prerequisites property")))
         g.add((_prerequisites_property, RDFS.comment, Literal("this property is used to describe what the prerequisites are for a course")))
 
+        #Custom property for prerequisites
+        _degree_type_properties= URIRef(f"http://example.org/property/degreetype")
+        g.add((_degree_type_properties, RDF.type, RDF.Property))
+        g.add((_degree_type_properties, RDFS.label, Literal("prerequisites property")))
+        g.add((_degree_type_properties, RDFS.comment, Literal("this property is used to describe what the prerequisites are for a course")))
+
         #Custom property for Offered at university
         _offered_at = URIRef(f"http://example.org/property/offeredat")
         g.add((_offered_at, RDF.type, RDF.Property))
@@ -81,11 +87,11 @@ class DataBuilder:
             _course = URIRef(f"http://example.org/course/{row['Course ID']}")
 
             g.add((_course, RDF.type, VIVO.Course))
-            g.add((_course, VIVO["title"], Literal(row["Long Title"])))
+            g.add((_course, VIVO.Title, Literal(row["Long Title"])))
             g.add((_course, RDFS.label, Literal(row["Long Title"])))
-            g.add((_course, VIVO["uid"], Literal(row["Course ID"])))
-            g.add((_course, VIVO["credits"], Literal(row["Class Units"])))
-            g.add((_course, VIVO["subjectAreaOf"], Literal(row["Subject"])))
+            g.add((_course, VIVO.Uid, Literal(row["Course ID"])))
+            g.add((_course, VIVO.Credits, Literal(row["Class Units"])))
+            g.add((_course, VIVO.subjectAreaOf, Literal(row["Subject"])))
             g.add((_course, _component_desc_property, Literal(row["Component Descr"])))
             g.add((_course, _catalog_property, Literal(row["Catalog"])))
             g.add((_course, _offered_at, URIRef("https://dbpedia.org/resource/Concordia_University")))
@@ -95,13 +101,15 @@ class DataBuilder:
             #missing Career and Equivalent Courses
 
             #COURSE DESC
-            desc = course_desc.iloc[i]["Descr"]
-            g.add((_course, VIVO["description"], Literal(desc)))
+            desc = course_desc.loc[course_desc["Course ID"] == row["Course ID"]]["Descr"]
+            g.add((_course, VIVO.description, Literal(desc)))
 
         g.serialize(destination = self.rdf_dir / "courses.ttl")
 
 
         #UNIVERSITIES
+
+        #fetch_all_universities()
             
 
     def fetch_all_universities(self):
