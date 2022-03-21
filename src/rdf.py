@@ -1,9 +1,10 @@
 import os
-from rdflib import Graph, URIRef, Literal
-from rdflib.namespace import FOAF, RDF
+from rdflib import Graph, URIRef, Literal, Namespace
+from rdflib.namespace import FOAF, RDF, RDFS
 from pathlib import Path
 import pandas as pd
 import subprocess
+
 
 
 
@@ -22,6 +23,7 @@ class DataBuilder:
         os.makedirs(self.data_dir, exist_ok=True)
         os.makedirs(self.rdf_dir, exist_ok=True)
 
+
     def download_data(self):
         subprocess.call(["sh", "scripts/download-concordia-data.sh", str(self.data_dir)])
         
@@ -34,23 +36,33 @@ class DataBuilder:
 
     def load_data(self):
         # THIS IS AN EXAMPLE
+        VIVO = Namespace('http://vivoweb.org/ontology/core#')
         g = Graph()
 
         # only reading first file for now
-        for f in os.listdir("data")[:-1]:
-            print(f"DATA FROM {f}")
+        # for f in os.listdir("data")[:-1]:
 
-            data = pd.read_csv(self.data_dir / f"{f}", encoding="unicode_escape")
-            print(data.head())
 
-            for _, row in data.iterrows():
-                # obviously don't use FOAF person but rather a custom class for course
-                _course = URIRef(f"http://example.org/people/{row['Course ID']}")
+        # COURSE DATA
+        course_data = pd.read_csv(
+            self.data_dir / f"CU_SR_OPEN_DATA_CATALOG.csv",
+            encoding="unicode_escape",
+        )
+        # COURSE DESC
+        course_desc = pd.read_csv(
+            self.data_dir / f"CU_SR_OPEN_DATA_CATALOG_DESC.csv",
+            encoding="unicode_escape",
+        )
 
-                g.add((_course, RDF.type, FOAF.Person))
-                g.add((_course, FOAF.name, Literal(row["Long Title"])))
-                
-            g.serialize(destination = self.rdf_dir / "courses.ttl")
+        for _, row in course_data.iterrows():
+            # obviously don't use FOAF person but rather a custom class for course
+            _course = URIRef(f"http://example.org/course/{row['Course ID']}")
+
+            g.add((_course, RDF.type, VIVO.Course))
+            g.add((_course, FOAF.name, Literal(row["Long Title"])))
+            g.add((_course, RDFS.label, Literal(row["Long Title"])))
+            desc = course_desc.loc[course_desc["Course ID"] == row["Course ID"]]
+        g.serialize(destination = self.rdf_dir / "courses.ttl")
             
 
     def fetch_all_universities(self):
@@ -62,9 +74,9 @@ class DataBuilder:
         g = Graph()
         qres = g.query(
         """
-        prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        prefix dbo: <http://dbpedia.org/ontology/>
-        prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX dbo: <http://dbpedia.org/ontology/>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
         SELECT DISTINCT ?university ?name
         WHERE {
@@ -87,10 +99,12 @@ class DataBuilder:
 if __name__ == "__main__":
     
     data_builder = DataBuilder()
-    data_builder.fetch_all_universities()
+
+    # data_builder.fetch_all_universities()
+
     # print("DOWNLOAD CONCORDIA CSV DATA")
     # data_builder.download_data()
-    # data_builder.load_data()
+    data_builder.load_data()
 
     # # serialize dbpedia data
     # print("SERIALIZING CONCORDIA DBPEDIA ENTRY")
