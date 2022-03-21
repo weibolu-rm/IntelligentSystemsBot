@@ -54,6 +54,13 @@ class DataBuilder:
             encoding="unicode_escape",
         )
 
+        #custom properties
+        #Custom property for Component Description
+        _component_desc_property = URIRef(f"http://example.org/property/componentdesc")
+        g.add((_component_desc_property, RDF.type, RDF.Property))
+        g.add((_component_desc_property, RDFS.label, Literal("component description property")))
+        g.add((_component_desc_property, RDFS.comment, Literal("this property is used to describe whether a course is a lab, lecture or a studio session")))
+
         for i, row in course_data.iterrows():
             #COURSE DATA
             # obviously don't use FOAF person but rather a custom class for course
@@ -65,13 +72,6 @@ class DataBuilder:
             g.add((_course, VIVO["uid"], Literal(row["Course ID"])))
             g.add((_course, VIVO["credits"], Literal(row["Class Units"])))
             g.add((_course, VIVO["subjectAreaOf"], Literal(row["Subject"])))
-
-
-            #Custom property for Component Description
-            _component_desc_property = URIRef(f"http://example.org/property/componentdesc")
-            g.add((_component_desc_property, RDF.type, RDF.Property))
-            g.add((_component_desc_property, RDFS.label, Literal("component description property")))
-            g.add((_component_desc_property, RDFS.comment, Literal("this property is used to describe whether a course is a lab, lecture or a studio session")))
             g.add((_course, _component_desc_property, Literal(row["Component Descr"])))
 
 
