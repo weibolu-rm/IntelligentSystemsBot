@@ -35,15 +35,11 @@ class DataBuilder:
         g.serialize(destination = self.rdf_dir / "concordia.ttl")
 
     def load_data(self):
-        # THIS IS AN EXAMPLE
         VIVO = Namespace('http://vivoweb.org/ontology/core#')
         g = Graph()
 
-        # only reading first file for now
-        # for f in os.listdir("data")[:-1]:
-
-
-        # COURSE DATA
+        #COURSES:
+        #COURSE DATA
         course_data = pd.read_csv(
             self.data_dir / f"CU_SR_OPEN_DATA_CATALOG.csv",
             encoding="unicode_escape",
@@ -62,13 +58,19 @@ class DataBuilder:
         g.add((_component_desc_property, RDFS.comment, Literal("this property is used to describe whether a course is a lab, lecture or a studio session")))
 
         #Custom property for Catalogue
-        _catalog_property = URIRef(f"http://example.org/property/catalogue")
+        _catalog_property = URIRef(f"http://example.org/property/catalog")
         g.add((_catalog_property, RDF.type, RDF.Property))
         g.add((_catalog_property, RDFS.label, Literal("Catalog property")))
         g.add((_catalog_property, RDFS.comment, Literal("this property is used to describe what the course number is for a course")))
 
+        #Custom property for prerequisites
+        _prerequisites_property = URIRef(f"http://example.org/property/prerequisites")
+        g.add((_prerequisites_property, RDF.type, RDF.Property))
+        g.add((_prerequisites_property, RDFS.label, Literal("prerequisites property")))
+        g.add((_prerequisites_property, RDFS.comment, Literal("this property is used to describe what the prerequisites are for a course")))
+
         #Custom property for Offered at university
-        _offered_at = URIRef(f"http://example.org/property/catalogue")
+        _offered_at = URIRef(f"http://example.org/property/offeredat")
         g.add((_offered_at, RDF.type, RDF.Property))
         g.add((_offered_at, RDFS.label, Literal("Offered at property")))
         g.add((_offered_at, RDFS.comment, Literal("this property is used to indicate a relationship between a university and a course being offered at that university")))
@@ -87,14 +89,19 @@ class DataBuilder:
             g.add((_course, _component_desc_property, Literal(row["Component Descr"])))
             g.add((_course, _catalog_property, Literal(row["Catalog"])))
             g.add((_course, _offered_at, URIRef("https://dbpedia.org/resource/Concordia_University")))
+            g.add((_course, _prerequisites_property, Literal(row["Pre Requisite Description"])))
+
+
+            #missing Career and Equivalent Courses
 
             #COURSE DESC
             desc = course_desc.iloc[i]["Descr"]
             g.add((_course, VIVO["description"], Literal(desc)))
 
-
-
         g.serialize(destination = self.rdf_dir / "courses.ttl")
+
+
+        #UNIVERSITIES
             
 
     def fetch_all_universities(self):
