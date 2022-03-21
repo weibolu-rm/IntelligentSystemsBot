@@ -6,9 +6,6 @@ import pandas as pd
 import subprocess
 
 
-
-
-
 class DataBuilder:
     def __init__(
         self,
@@ -43,11 +40,13 @@ class DataBuilder:
         course_data = pd.read_csv(
             self.data_dir / f"CU_SR_OPEN_DATA_CATALOG.csv",
             encoding="unicode_escape",
+            index_col = "Course ID",
         )
         # COURSE DESC
         course_desc = pd.read_csv(
             self.data_dir / f"CU_SR_OPEN_DATA_CATALOG_DESC.csv",
             encoding="unicode_escape",
+            index_col = "Course ID",
         )
 
         #custom properties
@@ -81,16 +80,16 @@ class DataBuilder:
         g.add((_offered_at, RDFS.label, Literal("Offered at property")))
         g.add((_offered_at, RDFS.comment, Literal("this property is used to indicate a relationship between a university and a course being offered at that university")))
 
-        for i, row in course_data.iterrows():
+        for course_id, row in course_data.iterrows():
             #COURSE DATA
             # obviously don't use FOAF person but rather a custom class for course
-            _course = URIRef(f"http://example.org/course/{row['Course ID']}")
+            _course = URIRef(f"http://example.org/course/{course_id}")
 
             g.add((_course, RDF.type, VIVO.Course))
             g.add((_course, VIVO.Title, Literal(row["Long Title"])))
             g.add((_course, RDFS.label, Literal(row["Long Title"])))
-            g.add((_course, VIVO.Uid, Literal(row["Course ID"])))
-            g.add((_course, VIVO.Credits, Literal(row["Class Units"])))
+            g.add((_course, VIVO.Uid, Literal(course_id)))
+            g.add((_course, VIVO.Credits, Literal(int(row["Class Units"]))))
             g.add((_course, VIVO.subjectAreaOf, Literal(row["Subject"])))
             g.add((_course, _component_desc_property, Literal(row["Component Descr"])))
             g.add((_course, _catalog_property, Literal(row["Catalog"])))
@@ -101,7 +100,7 @@ class DataBuilder:
             #missing Career and Equivalent Courses
 
             #COURSE DESC
-            desc = course_desc.loc[course_desc["Course ID"] == row["Course ID"]]["Descr"]
+            desc = course_desc.loc[course_id]["Descr"]
             g.add((_course, VIVO.description, Literal(desc)))
 
         g.serialize(destination = self.rdf_dir / "courses.ttl")
@@ -149,8 +148,8 @@ if __name__ == "__main__":
 
     # data_builder.fetch_all_universities()
 
-    # print("DOWNLOAD CONCORDIA CSV DATA")
-    # data_builder.download_data()
+    print("DOWNLOAD CONCORDIA CSV DATA")
+    data_builder.download_data()
     data_builder.load_data()
 
     # # serialize dbpedia data
