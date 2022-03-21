@@ -35,15 +35,11 @@ class DataBuilder:
         g.serialize(destination = self.rdf_dir / "concordia.ttl")
 
     def load_data(self):
-        # THIS IS AN EXAMPLE
         VIVO = Namespace('http://vivoweb.org/ontology/core#')
         g = Graph()
 
-        # only reading first file for now
-        # for f in os.listdir("data")[:-1]:
-
-
-        # COURSE DATA
+        #COURSES:
+        #COURSE DATA
         course_data = pd.read_csv(
             self.data_dir / f"CU_SR_OPEN_DATA_CATALOG.csv",
             encoding="unicode_escape",
@@ -54,15 +50,66 @@ class DataBuilder:
             encoding="unicode_escape",
         )
 
-        for _, row in course_data.iterrows():
+        #custom properties
+        #Custom property for Component Description
+        _component_desc_property = URIRef(f"http://example.org/property/componentdesc")
+        g.add((_component_desc_property, RDF.type, RDF.Property))
+        g.add((_component_desc_property, RDFS.label, Literal("component description property")))
+        g.add((_component_desc_property, RDFS.comment, Literal("this property is used to describe whether a course is a lab, lecture or a studio session")))
+
+        #Custom property for Catalogue
+        _catalog_property = URIRef(f"http://example.org/property/catalog")
+        g.add((_catalog_property, RDF.type, RDF.Property))
+        g.add((_catalog_property, RDFS.label, Literal("Catalog property")))
+        g.add((_catalog_property, RDFS.comment, Literal("this property is used to describe what the course number is for a course")))
+
+        #Custom property for prerequisites
+        _prerequisites_property = URIRef(f"http://example.org/property/prerequisites")
+        g.add((_prerequisites_property, RDF.type, RDF.Property))
+        g.add((_prerequisites_property, RDFS.label, Literal("prerequisites property")))
+        g.add((_prerequisites_property, RDFS.comment, Literal("this property is used to describe what the prerequisites are for a course")))
+
+        #Custom property for prerequisites
+        _degree_type_properties= URIRef(f"http://example.org/property/degreetype")
+        g.add((_degree_type_properties, RDF.type, RDF.Property))
+        g.add((_degree_type_properties, RDFS.label, Literal("prerequisites property")))
+        g.add((_degree_type_properties, RDFS.comment, Literal("this property is used to describe what the prerequisites are for a course")))
+
+        #Custom property for Offered at university
+        _offered_at = URIRef(f"http://example.org/property/offeredat")
+        g.add((_offered_at, RDF.type, RDF.Property))
+        g.add((_offered_at, RDFS.label, Literal("Offered at property")))
+        g.add((_offered_at, RDFS.comment, Literal("this property is used to indicate a relationship between a university and a course being offered at that university")))
+
+        for i, row in course_data.iterrows():
+            #COURSE DATA
             # obviously don't use FOAF person but rather a custom class for course
             _course = URIRef(f"http://example.org/course/{row['Course ID']}")
 
             g.add((_course, RDF.type, VIVO.Course))
-            g.add((_course, FOAF.name, Literal(row["Long Title"])))
+            g.add((_course, VIVO.Title, Literal(row["Long Title"])))
             g.add((_course, RDFS.label, Literal(row["Long Title"])))
-            desc = course_desc.loc[course_desc["Course ID"] == row["Course ID"]]
+            g.add((_course, VIVO.Uid, Literal(row["Course ID"])))
+            g.add((_course, VIVO.Credits, Literal(row["Class Units"])))
+            g.add((_course, VIVO.subjectAreaOf, Literal(row["Subject"])))
+            g.add((_course, _component_desc_property, Literal(row["Component Descr"])))
+            g.add((_course, _catalog_property, Literal(row["Catalog"])))
+            g.add((_course, _offered_at, URIRef("https://dbpedia.org/resource/Concordia_University")))
+            g.add((_course, _prerequisites_property, Literal(row["Pre Requisite Description"])))
+
+
+            #missing Career and Equivalent Courses
+
+            #COURSE DESC
+            desc = course_desc.loc[course_desc["Course ID"] == row["Course ID"]]["Descr"]
+            g.add((_course, VIVO.description, Literal(desc)))
+
         g.serialize(destination = self.rdf_dir / "courses.ttl")
+
+
+        #UNIVERSITIES
+
+        #fetch_all_universities()
             
 
     def fetch_all_universities(self):
