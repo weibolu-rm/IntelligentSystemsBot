@@ -61,19 +61,32 @@ class DataBuilder:
         g.add((_component_desc_property, RDFS.label, Literal("component description property")))
         g.add((_component_desc_property, RDFS.comment, Literal("this property is used to describe whether a course is a lab, lecture or a studio session")))
 
+        #Custom property for Catalogue
+        _catalog_property = URIRef(f"http://example.org/property/catalogue")
+        g.add((_catalog_property, RDF.type, RDF.Property))
+        g.add((_catalog_property, RDFS.label, Literal("Catalog property")))
+        g.add((_catalog_property, RDFS.comment, Literal("this property is used to describe what the course number is for a course")))
+
+        #Custom property for Offered at university
+        _offered_at = URIRef(f"http://example.org/property/catalogue")
+        g.add((_offered_at, RDF.type, RDF.Property))
+        g.add((_offered_at, RDFS.label, Literal("Offered at property")))
+        g.add((_offered_at, RDFS.comment, Literal("this property is used to indicate a relationship between a university and a course being offered at that university")))
+
         for i, row in course_data.iterrows():
             #COURSE DATA
             # obviously don't use FOAF person but rather a custom class for course
             _course = URIRef(f"http://example.org/course/{row['Course ID']}")
 
             g.add((_course, RDF.type, VIVO.Course))
-            g.add((_course, FOAF.name, Literal(row["Long Title"])))
+            g.add((_course, VIVO["title"], Literal(row["Long Title"])))
             g.add((_course, RDFS.label, Literal(row["Long Title"])))
             g.add((_course, VIVO["uid"], Literal(row["Course ID"])))
             g.add((_course, VIVO["credits"], Literal(row["Class Units"])))
             g.add((_course, VIVO["subjectAreaOf"], Literal(row["Subject"])))
             g.add((_course, _component_desc_property, Literal(row["Component Descr"])))
-
+            g.add((_course, _catalog_property, Literal(row["Catalog"])))
+            g.add((_course, _offered_at, URIRef("https://dbpedia.org/resource/Concordia_University")))
 
             #COURSE DESC
             desc = course_desc.iloc[i]["Descr"]
