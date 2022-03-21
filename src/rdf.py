@@ -70,10 +70,16 @@ class DataBuilder:
         g.add((_prerequisites_property, RDFS.comment, Literal("this property is used to describe what the prerequisites are for a course")))
 
         #Custom property for prerequisites
-        _degree_type_properties= URIRef(f"http://example.org/property/degreetype")
-        g.add((_degree_type_properties, RDF.type, RDF.Property))
-        g.add((_degree_type_properties, RDFS.label, Literal("prerequisites property")))
-        g.add((_degree_type_properties, RDFS.comment, Literal("this property is used to describe what the prerequisites are for a course")))
+        _degree_type_property= URIRef(f"http://example.org/property/degreetype")
+        g.add((_degree_type_property, RDF.type, RDF.Property))
+        g.add((_degree_type_property, RDFS.label, Literal("degree type property")))
+        g.add((_degree_type_property, RDFS.comment, Literal("this property is used to describe what type of degree the course is offered for")))
+
+        #Custom property for prerequisites
+        _equivalent_courses_property= URIRef(f"http://example.org/property/equivalentcourses")
+        g.add((_equivalent_courses_property, RDF.type, RDF.Property))
+        g.add((_equivalent_courses_property, RDFS.label, Literal("equivalent courses property")))
+        g.add((_equivalent_courses_property, RDFS.comment, Literal("this property is used to describe what courses are equivalent to the subject course")))
 
         #Custom property for Offered at university
         _offered_at = URIRef(f"http://example.org/property/offeredat")
@@ -96,9 +102,8 @@ class DataBuilder:
             g.add((_course, _catalog_property, Literal(row["Catalog"])))
             g.add((_course, _offered_at, URIRef("https://dbpedia.org/resource/Concordia_University")))
             g.add((_course, _prerequisites_property, Literal(row["Pre Requisite Description"])))
-
-
-            #missing Career and Equivalent Courses
+            g.add((_course, _degree_type_property, Literal(row["Career"])))
+            g.add((_course, _equivalent_courses_property, Literal(row["Equivalent Courses"])))
 
             #COURSE DESC
             desc = course_desc.loc[course_desc["Course ID"] == row["Course ID"]]["Descr"]
