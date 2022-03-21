@@ -54,14 +54,33 @@ class DataBuilder:
             encoding="unicode_escape",
         )
 
-        for _, row in course_data.iterrows():
+        for i, row in course_data.iterrows():
+            #COURSE DATA
             # obviously don't use FOAF person but rather a custom class for course
             _course = URIRef(f"http://example.org/course/{row['Course ID']}")
 
             g.add((_course, RDF.type, VIVO.Course))
             g.add((_course, FOAF.name, Literal(row["Long Title"])))
             g.add((_course, RDFS.label, Literal(row["Long Title"])))
-            desc = course_desc.loc[course_desc["Course ID"] == row["Course ID"]]
+            g.add((_course, VIVO["uid"], Literal(row["Course ID"])))
+            g.add((_course, VIVO["credits"], Literal(row["Class Units"])))
+            g.add((_course, VIVO["subjectAreaOf"], Literal(row["Subject"])))
+
+
+            #Custom property for Component Description
+            _component_desc_property = URIRef(f"http://example.org/property/componentdesc")
+            g.add((_component_desc_property, RDF.type, RDF.Property))
+            g.add((_component_desc_property, RDFS.label, Literal("component description property")))
+            g.add((_component_desc_property, RDFS.comment, Literal("this property is used to describe whether a course is a lab, lecture or a studio session")))
+            g.add((_course, _component_desc_property, Literal(row["Component Descr"])))
+
+
+            #COURSE DESC
+            desc = course_desc.iloc[i]["Descr"]
+            g.add((_course, VIVO["description"], Literal(desc)))
+
+
+
         g.serialize(destination = self.rdf_dir / "courses.ttl")
             
 
