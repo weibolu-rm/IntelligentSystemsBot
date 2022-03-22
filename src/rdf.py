@@ -6,6 +6,10 @@ import pandas as pd
 import subprocess
 
 
+VIVO = Namespace('http://vivoweb.org/ontology/core#')
+DBO = Namespace("http://dbpedia.org/ontology/")
+EXP = Namespace("http://example.org/property/")
+
 class DataBuilder:
     def __init__(
         self,
@@ -29,8 +33,8 @@ class DataBuilder:
 
 
     def load_data(self):
-        VIVO = Namespace('http://vivoweb.org/ontology/core#')
         g = self.knowledge_graph
+
         self._define_vocabulary()
 
         #COURSES:
@@ -54,11 +58,11 @@ class DataBuilder:
             _course = URIRef(f"http://example.org/course/{course_id}")
 
             g.add((_course, RDF.type, VIVO.Course))
-            g.add((_course, VIVO.Title, Literal(row["Long Title"])))
+            g.add((_course, VIVO.title, Literal(row["Long Title"])))
             g.add((_course, RDFS.label, Literal(row["Long Title"])))
             g.add((_course, FOAF.name, Literal(row["Long Title"])))
-            g.add((_course, VIVO.Uid, Literal(course_id)))
-            g.add((_course, VIVO.Credits, Literal(int(row["Class Units"]))))
+            g.add((_course, VIVO.uid, Literal(course_id)))
+            g.add((_course, VIVO.credits, Literal(int(row["Class Units"]))))
             g.add((_course, VIVO.subjectAreaOf, Literal(row["Subject"])))
             g.add((_course, self.vocabulary["component_description_property"], Literal(row["Component Descr"])))
             g.add((_course, self.vocabulary["catalog_property"], Literal(row["Catalog"])))
@@ -84,50 +88,108 @@ class DataBuilder:
         print(f"Knowledge base serialized to {(self.rdf_dir / 'knowledge_base.ttl').resolve()}")
             
     def _define_vocabulary(self):
-        g = self.knowledge_graph
+        g = Graph()
         #custom properties
         #Custom property for Component Description
-        _component_desc_property = URIRef(f"http://example.org/property/componentDesc")
+        ######
+        # COURSES
+        #####
+
+        _component_desc_property = URIRef("http://example.org/property/componentDesc")
         self.vocabulary["component_description_property"] = _component_desc_property
         g.add((_component_desc_property, RDF.type, RDF.Property))
+        g.add((_component_desc_property, RDFS.domain, VIVO.Course))
+        g.add((_component_desc_property, RDFS.range, RDFS.Literal))
         g.add((_component_desc_property, RDFS.label, Literal("component description property")))
         g.add((_component_desc_property, RDFS.comment, Literal("this property is used to describe whether a course is a lab, lecture or a studio session")))
 
         #Custom property for Catalogue
-        _catalog_property = URIRef(f"http://example.org/property/catalog")
+        _catalog_property = URIRef("http://example.org/property/catalog")
         self.vocabulary["catalog_property"] = _catalog_property
         g.add((_catalog_property, RDF.type, RDF.Property))
+        g.add((_catalog_property, RDFS.domain, VIVO.Course))
+        g.add((_catalog_property, RDFS.range, RDFS.Literal))
         g.add((_catalog_property, RDFS.label, Literal("Catalog property")))
         g.add((_catalog_property, RDFS.comment, Literal("this property is used to describe what the course number is for a course")))
 
         #Custom property for prerequisites
-        _prerequisites_property = URIRef(f"http://example.org/property/prerequisites")
+        _prerequisites_property = URIRef("http://example.org/property/prerequisites")
         self.vocabulary["prerequisites_property"] =_prerequisites_property 
         g.add((_prerequisites_property, RDF.type, RDF.Property))
+        g.add((_prerequisites_property, RDFS.domain, VIVO.Course))
+        g.add((_prerequisites_property, RDFS.range, RDFS.Literal))
+        # this is a Description, so not necessarily Range of Course
         g.add((_prerequisites_property, RDFS.label, Literal("prerequisites property")))
         g.add((_prerequisites_property, RDFS.comment, Literal("this property is used to describe what the prerequisites are for a course")))
 
         #Custom property for prerequisites
-        _degree_type_property = URIRef(f"http://example.org/property/degreeType")
+        _degree_type_property = URIRef("http://example.org/property/degreeType")
         self.vocabulary["degree_type_property"] = _degree_type_property
         g.add((_degree_type_property, RDF.type, RDF.Property))
+        g.add((_degree_type_property, RDFS.domain, VIVO.Course))
+        g.add((_degree_type_property, RDFS.range, RDFS.Literal))
         g.add((_degree_type_property, RDFS.label, Literal("degree type property")))
         g.add((_degree_type_property, RDFS.comment, Literal("this property is used to describe what type of degree the course is offered for")))
 
         #Custom property for prerequisites
-        _equivalent_courses_property = URIRef(f"http://example.org/property/equivalentCourses")
+        _equivalent_courses_property = URIRef("http://example.org/property/equivalentCourses")
         self.vocabulary["equivalent_courses_property"] = _equivalent_courses_property 
         g.add((_equivalent_courses_property, RDF.type, RDF.Property))
+        g.add((_equivalent_courses_property, RDFS.domain, VIVO.Course))
+        # The data is actually a description, not necessarily a course
+        g.add((_equivalent_courses_property, RDFS.range, RDFS.Literal))
         g.add((_equivalent_courses_property, RDFS.label, Literal("equivalent courses property")))
         g.add((_equivalent_courses_property, RDFS.comment, Literal("this property is used to describe what courses are equivalent to the subject course")))
 
         #Custom property for Offered at university
-        _offered_at = URIRef(f"http://example.org/property/offeredAt")
+        _offered_at = URIRef("http://example.org/property/offeredAt")
         self.vocabulary["offered_at"] = _offered_at 
         g.add((_offered_at, RDF.type, RDF.Property))
+        g.add((_offered_at, RDFS.domain, VIVO.Course))
+        g.add((_offered_at, RDFS.range, DBO.University))
         g.add((_offered_at, RDFS.label, Literal("Offered at property")))
         g.add((_offered_at, RDFS.comment, Literal("this property is used to indicate a relationship between a university and a course being offered at that university")))
 
+
+        ######
+        # STUDENTS
+        #####
+        _student_id = URIRef("http://example.org/property/studentId")
+        self.vocabulary["student_id"] = _student_id
+        g.add((_student_id, RDF.type, RDF.Property))
+        g.add((_student_id, RDFS.domain, VIVO.Student))
+        g.add((_student_id, RDFS.range, RDFS.Literal))
+        g.add((_student_id, RDFS.label, Literal("Student Identification Number")))
+        g.add((_student_id, RDFS.comment, Literal("Unique identification number associated to a student")))
+
+
+        _received_grade = URIRef("http://example.org/property/receivedGrade")
+        self.vocabulary["received_grade"] = _received_grade
+        g.add((_received_grade, RDF.type, RDF.Property))
+        g.add((_received_grade, RDFS.domain, VIVO.Student))
+        g.add((_received_grade, RDFS.range, EXP.Grade))
+        g.add((_received_grade, RDFS.label, Literal("Received Grade")))
+        g.add((_received_grade, RDFS.comment, Literal("Grade received by a Student in a given Course")))
+
+
+        ####
+        # GRADE
+        ####
+        g.add((DBO.Grade, RDF.type, RDFS.Class))
+        _from_course = URIRef("http://example.org/property/fromCourse")
+        self.vocabulary["from_course"] = _from_course
+        g.add((_from_course, RDF.type, RDF.Property))
+        g.add((_from_course, RDFS.domain, VIVO.Student))
+        g.add((_from_course, RDFS.range, VIVO.Course))
+        g.add((_from_course, RDFS.label, Literal("Grade from course property")))
+        g.add((_from_course, RDFS.comment, Literal("Property describing grade received from a given course.")))
+
+
+        
+
+
+
+        self.knowledge_graph = self.knowledge_graph + g
        
 
 
@@ -137,7 +199,6 @@ class DataBuilder:
 
         unfortunately this is limited by the fact that this is a public endpoint
         """
-        DBO = Namespace("http://dbpedia.org/ontology/")
         g = self.knowledge_graph
 
         print("Fetching universities..")
