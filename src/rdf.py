@@ -15,7 +15,7 @@ class DataBuilder:
         self.data_dir = Path(data_dir)
         self.rdf_dir = Path(rdf_dir)
         self.vocabulary = {}
-        self.knowledge_base = Graph()
+        self.knowledge_graph = Graph()
         self._initialize_dirs()
 
     def _initialize_dirs(self):
@@ -30,7 +30,7 @@ class DataBuilder:
 
     def load_data(self):
         VIVO = Namespace('http://vivoweb.org/ontology/core#')
-        g = self.knowledge_base
+        g = self.knowledge_graph
         self._define_vocabulary()
 
         #COURSES:
@@ -62,7 +62,7 @@ class DataBuilder:
             g.add((_course, VIVO.subjectAreaOf, Literal(row["Subject"])))
             g.add((_course, self.vocabulary["component_description_property"], Literal(row["Component Descr"])))
             g.add((_course, self.vocabulary["catalog_property"], Literal(row["Catalog"])))
-            g.add((_course, self.vocabulary["offered_at"], URIRef("https://dbpedia.org/resource/Concordia_University")))
+            g.add((_course, self.vocabulary["offered_at"], URIRef("http://dbpedia.org/resource/Concordia_University")))
             if str(row["Pre Requisite Description"]) != "nan":
                 g.add((_course, self.vocabulary["prerequisites_property"], Literal(row["Pre Requisite Description"])))
             g.add((_course, self.vocabulary["degree_type_property"], Literal(row["Career"])))
@@ -74,19 +74,17 @@ class DataBuilder:
             if str(desc) != "nan":
                 g.add((_course, VIVO.description, Literal(desc)))
 
-        g.serialize(destination = self.rdf_dir / "courses.ttl")
-
         #UNIVERSITIES
         g = g + self._fetch_all_universities()
 
 
-    def serialize_knowledge_base(self):
+    def serialize_knowledge_graph(self):
         print("Serializing knowledge base..")
-        self.knowledge_base.serialize(destination=self.rdf_dir / "knowledge_base.ttl")
+        self.knowledge_graph.serialize(destination=self.rdf_dir / "knowledge_base.ttl")
         print(f"Knowledge base serialized to {(self.rdf_dir / 'knowledge_base.ttl').resolve()}")
             
     def _define_vocabulary(self):
-        g = self.knowledge_base
+        g = self.knowledge_graph
         #custom properties
         #Custom property for Component Description
         _component_desc_property = URIRef(f"http://example.org/property/componentDesc")
@@ -139,8 +137,9 @@ class DataBuilder:
 
         unfortunately this is limited by the fact that this is a public endpoint
         """
-        DBO = Namespace("https://dbpedia.org/ontology/")
-        g = Graph()
+        DBO = Namespace("http://dbpedia.org/ontology/")
+        g = self.knowledge_graph
+
         print("Fetching universities..")
         qres = g.query(
         """
@@ -182,4 +181,4 @@ if __name__ == "__main__":
 
     data_builder.download_concordia_course_data()
     data_builder.load_data()
-    data_builder.serialize_knowledge_base()
+    data_builder.serialize_knowledge_graph()
