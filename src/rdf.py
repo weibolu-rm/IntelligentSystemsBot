@@ -9,6 +9,8 @@ import subprocess
 VIVO = Namespace('http://vivoweb.org/ontology/core#')
 DBO = Namespace("http://dbpedia.org/ontology/")
 EXP = Namespace("http://example.org/property/")
+EXO = Namespace("http://example.org/ontology/")
+VCARD = Namespace("http://www.w3.org/2006/vcard/ns#")
 
 class DataBuilder:
     def __init__(
@@ -36,6 +38,7 @@ class DataBuilder:
         g = self.knowledge_graph
 
         self._define_vocabulary()
+        self._populate_students_and_grades()
 
         #COURSES:
         #COURSE DATA
@@ -61,11 +64,11 @@ class DataBuilder:
             g.add((_course, VIVO.title, Literal(row["Long Title"])))
             g.add((_course, RDFS.label, Literal(row["Long Title"])))
             g.add((_course, FOAF.name, Literal(row["Long Title"])))
-            g.add((_course, VIVO.uid, Literal(course_id)))
             g.add((_course, VIVO.credits, Literal(int(row["Class Units"]))))
-            g.add((_course, VIVO.subjectAreaOf, Literal(row["Subject"])))
+            # g.add((_course, VIVO.subjectAreaOf, Literal(row["Subject"])))
+            g.add((_course, EXP.subject, Literal(row["Subject"])))
             g.add((_course, self.vocabulary["component_description_property"], Literal(row["Component Descr"])))
-            g.add((_course, self.vocabulary["catalog_property"], Literal(row["Catalog"])))
+            g.add((_course, self.vocabulary["course_number_property"], Literal(row["Catalog"])))
             g.add((_course, self.vocabulary["offered_at"], URIRef("http://dbpedia.org/resource/Concordia_University")))
             if str(row["Pre Requisite Description"]) != "nan":
                 g.add((_course, self.vocabulary["prerequisites_property"], Literal(row["Pre Requisite Description"])))
@@ -103,14 +106,14 @@ class DataBuilder:
         g.add((_component_desc_property, RDFS.label, Literal("component description property")))
         g.add((_component_desc_property, RDFS.comment, Literal("this property is used to describe whether a course is a lab, lecture or a studio session")))
 
-        #Custom property for Catalogue
-        _catalog_property = URIRef("http://example.org/property/catalog")
-        self.vocabulary["catalog_property"] = _catalog_property
-        g.add((_catalog_property, RDF.type, RDF.Property))
-        g.add((_catalog_property, RDFS.domain, VIVO.Course))
-        g.add((_catalog_property, RDFS.range, RDFS.Literal))
-        g.add((_catalog_property, RDFS.label, Literal("Catalog property")))
-        g.add((_catalog_property, RDFS.comment, Literal("this property is used to describe what the course number is for a course")))
+        #Custom property for Course Numberue
+        _course_number_property = URIRef("http://example.org/property/courseNumber")
+        self.vocabulary["course_number_property"] = _course_number_property
+        g.add((_course_number_property, RDF.type, RDF.Property))
+        g.add((_course_number_property, RDFS.domain, VIVO.Course))
+        g.add((_course_number_property, RDFS.range, RDFS.Literal))
+        g.add((_course_number_property, RDFS.label, Literal("Course Number property")))
+        g.add((_course_number_property, RDFS.comment, Literal("this property is used to describe what the course number is for a course")))
 
         #Custom property for prerequisites
         _prerequisites_property = URIRef("http://example.org/property/prerequisites")
@@ -167,15 +170,23 @@ class DataBuilder:
         self.vocabulary["received_grade"] = _received_grade
         g.add((_received_grade, RDF.type, RDF.Property))
         g.add((_received_grade, RDFS.domain, VIVO.Student))
-        g.add((_received_grade, RDFS.range, EXP.Grade))
-        g.add((_received_grade, RDFS.label, Literal("Received Grade")))
+        g.add((_received_grade, RDFS.range, EXO.Grade))
+        g.add((_received_grade, RDFS.label, Literal("Received Grade Property")))
         g.add((_received_grade, RDFS.comment, Literal("Grade received by a Student in a given Course")))
 
+
+        _competent_in = URIRef("http://example.org/property/competentIn") 
+        self.vocabulary["competent_in"] = _competent_in
+        g.add((_competent_in, RDF.type, RDF.Property))
+        g.add((_competent_in, RDFS.domain, VIVO.Student))
+        g.add((_competent_in, RDFS.range, EXO.Topic))
+        g.add((_competent_in, RDFS.label, Literal("Competent in Property")))
+        g.add((_competent_in, RDFS.comment, Literal("Property describing competency in a given topic.")))
 
         ####
         # GRADE
         ####
-        g.add((DBO.Grade, RDF.type, RDFS.Class))
+        g.add((EXO.Grade, RDF.type, RDFS.Class))
         _from_course = URIRef("http://example.org/property/fromCourse")
         self.vocabulary["from_course"] = _from_course
         g.add((_from_course, RDF.type, RDF.Property))
@@ -185,12 +196,111 @@ class DataBuilder:
         g.add((_from_course, RDFS.comment, Literal("Property describing grade received from a given course.")))
 
 
+        ####
+        # TOPIC
+        #### 
+        g.add((EXO.Topic, RDF.type, RDFS.Class))
+        g.add((EXO.Topic, RDFS.subClassOf, VIVO.Concept))
+        _provenance = URIRef("http://example.org/property/provenance")
+        self.vocabulary["provenance"] = _provenance
+        g.add((_provenance, RDF.type, RDF.Property))
+        g.add((_provenance, RDFS.domain, EXO.Topic))
+        # NO RANGE HERE
+
+        ####
+        # SUBJECT
+        ####
+        g.add((EXO.Subject, RDF.type, RDF.Property))
+        _subject = URIRef("http://example.org/property/subject")
+        g.add((_subject, RDFS.domain, VIVO.Course))
+        g.add((_subject, RDFS.range, RDFS.Literal))
+        g.add((_subject, RDFS.label, Literal("Subject")))
+        g.add((_subject, RDFS.comment, Literal("Describes the subject of a course")))
         
 
+        ####
+        # LECTURE
+        ####
+        g.add((EXO.Lecture, RDF.type, VIVO.Event))
+        _lecture_number = URIRef("http://example.org/property/lectureNumber")
+        self.vocabulary["lecture_number"] = _lecture_number
+        g.add((_lecture_number, RDF.type, RDF.Property))
+        g.add((_lecture_number, RDFS.domain, EXO.Lecture))
+        g.add((_lecture_number, RDFS.range, RDFS.Literal))
+        g.add((_lecture_number, RDFS.label, Literal("Lecture Number")))
+        g.add((_lecture_number, RDFS.comment, Literal("The number of the lecture in sequence with the course.")))
 
 
+        ####
+        # CONTENT
+        ####
+        _content = URIRef("http://example.org/property/content")
+        self.vocabulary["content"] = _content
+        g.add((_content, RDF.type, RDF.Property))
+        g.add((_content, RDFS.domain, EXO.Lecture))
+        g.add((_content, RDFS.label, Literal("Content")))
+        g.add((_content, RDFS.comment, Literal("Files or materials for given lecture")))
+        
+        _video = URIRef("http://example.org/property/video")
+        self.vocabulary["video"] = _video
+        g.add((_video, RDFS.subPropertyOf, EXP.content))
+
+        _image = URIRef("http://example.org/property/image")
+        self.vocabulary["image"] = _image
+        g.add((_image, RDFS.subPropertyOf, EXP.content))
+
+        _document = URIRef("http://example.org/property/document")
+        self.vocabulary["document"] = _document
+        g.add((_document, RDFS.subPropertyOf, EXP.content))
+
+        _pdf = URIRef("http://example.org/property/pdf")
+        self.vocabulary["pdf"] = _pdf
+        g.add((_document, RDFS.subPropertyOf, EXP.content))
+
+
+
+        # Serialize definitions in a separate turtle file
+        print("Serializing RDFS definitions")
+        g.serialize(destination= self.rdf_dir / "RDFS.ttl")
+
+
+        # add it to our knowledge base
         self.knowledge_graph = self.knowledge_graph + g
+
        
+
+    def _populate_students_and_grades(self):
+        g = self.knowledge_graph
+
+
+        elijah = URIRef("http://example.org/student/40078229")
+        robert = URIRef(f"http://example.org/student/40058095")
+        amine = URIRef(f"http://example.org/student/40046046")
+        logan = URIRef(f"http://example.org/student/40089767")
+
+        g.add((elijah, RDF.type, VIVO.Student))
+        g.add((elijah, VCARD.givenName, Literal("Elijah")))
+        g.add((elijah, VCARD.familyName, Literal("Mon")))
+        g.add((elijah, VCARD.email, Literal("elijah@email.com")))
+        g.add((elijah, self.vocabulary["student_id"], Literal("40078229")))
+
+        g.add((robert, RDF.type, VIVO.Student))
+        g.add((robert, VCARD.givenName, Literal("Robert")))
+        g.add((robert, VCARD.familyName, Literal("Michad")))
+        g.add((robert, VCARD.email, Literal("robert@email.com")))
+        g.add((robert, self.vocabulary["student_id"], Literal("40058095")))
+
+        g.add((amine, RDF.type, VIVO.Student))
+        g.add((amine, VCARD.givenName, Literal("Mohamed Amine")))
+        g.add((amine, VCARD.familyName, Literal("Kihal")))
+        g.add((amine, VCARD.email, Literal("momo@email.com")))
+        g.add((amine, self.vocabulary["student_id"], Literal("40046046")))
+
+        g.add((logan, RDF.type, VIVO.Student))
+        g.add((logan, VCARD.givenName, Literal("Logan")))
+        g.add((logan, VCARD.familyName, Literal("Paul")))
+        g.add((logan, VCARD.email, Literal("epaul@email.com")))
+        g.add((logan, self.vocabulary["student_id"], Literal("40089767")))
 
 
     def _fetch_all_universities(self):
