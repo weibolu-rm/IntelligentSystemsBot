@@ -37,6 +37,7 @@ class DataBuilder:
     def load_data(self):
         self._define_vocabulary()
         self._populate_students_and_grades()
+        self._populate_lectures_and_topics()
 
         g = self.knowledge_graph
 
@@ -270,6 +271,9 @@ class DataBuilder:
        
 
     def _populate_students_and_grades(self):
+        """
+        Temporary manual data
+        """
         g = self.knowledge_graph
 
 
@@ -282,26 +286,74 @@ class DataBuilder:
         g.add((elijah, VCARD.givenName, Literal("Elijah")))
         g.add((elijah, VCARD.familyName, Literal("Mon")))
         g.add((elijah, VCARD.email, Literal("elijah@email.com")))
-        g.add((elijah, self.vocabulary["student_id"], Literal("40078229")))
+        g.add((elijah, self.vocabulary["student_id"], Literal(40078229)))
 
         g.add((robert, RDF.type, VIVO.Student))
         g.add((robert, VCARD.givenName, Literal("Robert")))
         g.add((robert, VCARD.familyName, Literal("Michad")))
         g.add((robert, VCARD.email, Literal("robert@email.com")))
-        g.add((robert, self.vocabulary["student_id"], Literal("40058095")))
+        g.add((robert, self.vocabulary["student_id"], Literal(40058095)))
 
         g.add((amine, RDF.type, VIVO.Student))
         g.add((amine, VCARD.givenName, Literal("Mohamed Amine")))
         g.add((amine, VCARD.familyName, Literal("Kihal")))
         g.add((amine, VCARD.email, Literal("momo@email.com")))
-        g.add((amine, self.vocabulary["student_id"], Literal("40046046")))
+        g.add((amine, self.vocabulary["student_id"], Literal(40046046)))
 
         g.add((logan, RDF.type, VIVO.Student))
         g.add((logan, VCARD.givenName, Literal("Logan")))
         g.add((logan, VCARD.familyName, Literal("Paul")))
         g.add((logan, VCARD.email, Literal("epaul@email.com")))
-        g.add((logan, self.vocabulary["student_id"], Literal("40089767")))
+        g.add((logan, self.vocabulary["student_id"], Literal(40089767)))
 
+        grade01 = URIRef("http://example.org/grade/40078229_A_Intelligent_Systems")
+        course01 = URIRef("http://example.org/course/5484")
+
+        g.add((grade01, RDF.type, EXO.Grade))
+        g.add((grade01, RDF.value, Literal("A")))
+        g.add((grade01, self.vocabulary["from_course"], course01))
+
+        g.add((elijah, self.vocabulary["received_grade"], grade01))
+
+
+    def _populate_lectures_and_topics(self):
+        """
+        Temporary manual data
+            TODO: use csv or somethign
+        """
+        g = self.knowledge_graph
+
+        lec01 = URIRef("http://example.org/lecture/Bagging_And_Boosting")
+        g.add((lec01, RDF.type, EXO.Lecture))
+        g.add((lec01, VIVO.title, Literal("Bagging and boosting")))
+        g.add((lec01, self.vocabulary["lecture_number"], Literal(1)))
+        
+        lec02 = URIRef("http://example.org/lecture/Linear_Models")
+        g.add((lec02, RDF.type, EXO.Lecture))
+        g.add((lec02, VIVO.title, Literal("Linear Models")))
+        g.add((lec02, self.vocabulary["lecture_number"], Literal(2)))
+
+        lec03 = URIRef("http://example.org/lecture/Clustering_and_Mixture_Models")
+        g.add((lec03, RDF.type, EXO.Lecture))
+        g.add((lec03, VIVO.title, Literal("Clustering and Mixture Models")))
+        g.add((lec03, self.vocabulary["lecture_number"], Literal(3)))
+
+        lec04 = URIRef("http://example.org/lecture/Kernel_Density")
+        g.add((lec04, RDF.type, EXO.Lecture))
+        g.add((lec04, VIVO.title, Literal("Kernel Density")))
+        g.add((lec04, self.vocabulary["lecture_number"], Literal(4)))
+
+        lec05 = URIRef("http://example.org/lecture/Support_Vector_Machines")
+        g.add((lec05, RDF.type, EXO.Lecture))
+        g.add((lec05, VIVO.title, Literal("Support Vector Machines")))
+        g.add((lec05, self.vocabulary["lecture_number"], Literal(5)))
+
+        wiki_page = URIRef("http://dbpedia.org/resource/Support-vector_machine")
+        topic = URIRef("http://example.org/topic/Support_Vector_Machines")
+        g.add((topic, RDF.type, EXO.Topic))
+        g.add((topic, self.vocabulary["provenance"], lec05))
+        g.add((topic, RDFS.seeAlso, wiki_page))
+       
 
     def _fetch_all_universities(self):
         """
