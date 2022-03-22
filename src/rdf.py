@@ -35,10 +35,10 @@ class DataBuilder:
 
 
     def load_data(self):
-        g = self.knowledge_graph
-
         self._define_vocabulary()
         self._populate_students_and_grades()
+
+        g = self.knowledge_graph
 
         #COURSES:
         #COURSE DATA
