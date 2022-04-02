@@ -175,6 +175,13 @@ class DataBuilder:
         g.add((_received_grade, RDFS.label, Literal("Received Grade Property")))
         g.add((_received_grade, RDFS.comment, Literal("Grade received by a Student in a given Course")))
 
+        _retaken_course = URIRef("http://example.org/property/retakenCourse")
+        self.vocabulary["retaken_course"] = _retaken_course
+        g.add((_received_grade, RDF.type, RDF.Property))
+        g.add((_received_grade, RDFS.domain, VIVO.Student))
+        g.add((_received_grade, RDFS.range, VIVO.Course))
+        g.add((_received_grade, RDFS.label, Literal("Re-taken Course")))
+        g.add((_received_grade, RDFS.comment, Literal("Student has re-taken a course, perhaps to get a passing grade.")))
 
         _competent_in = URIRef("http://example.org/property/competentIn") 
         self.vocabulary["competent_in"] = _competent_in
@@ -188,10 +195,11 @@ class DataBuilder:
         # GRADE
         ####
         g.add((EXO.Grade, RDF.type, RDFS.Class))
+
         _from_course = URIRef("http://example.org/property/fromCourse")
         self.vocabulary["from_course"] = _from_course
         g.add((_from_course, RDF.type, RDF.Property))
-        g.add((_from_course, RDFS.domain, VIVO.Student))
+        g.add((_from_course, RDFS.domain, EXO.Grade))
         g.add((_from_course, RDFS.range, VIVO.Course))
         g.add((_from_course, RDFS.label, Literal("Grade from course property")))
         g.add((_from_course, RDFS.comment, Literal("Property describing grade received from a given course.")))
@@ -306,14 +314,23 @@ class DataBuilder:
         g.add((logan, VCARD.email, Literal("epaul@email.com")))
         g.add((logan, self.vocabulary["student_id"], Literal(40089767)))
 
-        grade01 = URIRef("http://example.org/grade/40078229_A_Intelligent_Systems")
+        grade01 = URIRef("http://example.org/grade/40078229_F_Intelligent_Systems")
+        grade02 = URIRef("http://example.org/grade/40078229_A_Intelligent_Systems")
         course01 = URIRef("http://example.org/course/5484")
 
         g.add((grade01, RDF.type, EXO.Grade))
-        g.add((grade01, RDF.value, Literal("A")))
+        g.add((grade01, RDF.value, Literal("F")))
         g.add((grade01, self.vocabulary["from_course"], course01))
 
+        g.add((grade02, RDF.type, EXO.Grade))
+        g.add((grade02, RDF.value, Literal("F")))
+        g.add((grade02, self.vocabulary["from_course"], course01))
+
         g.add((elijah, self.vocabulary["received_grade"], grade01))
+        g.add((elijah, self.vocabulary["received_grade"], grade02))
+
+        g.add((elijah, self.vocabulary["retaken_course"], course01))
+
 
 
     def _populate_lectures_and_topics(self):
@@ -321,32 +338,38 @@ class DataBuilder:
         Temporary manual data
             TODO: use csv or somethign
         """
+        course01 = URIRef("http://example.org/course/049701")
         g = self.knowledge_graph
 
         lec01 = URIRef("http://example.org/lecture/Bagging_And_Boosting")
         g.add((lec01, RDF.type, EXO.Lecture))
         g.add((lec01, VIVO.title, Literal("Bagging and boosting")))
         g.add((lec01, self.vocabulary["lecture_number"], Literal(1)))
+        g.add((lec01, self.vocabulary["provenance"], course01))
         
         lec02 = URIRef("http://example.org/lecture/Linear_Models")
         g.add((lec02, RDF.type, EXO.Lecture))
         g.add((lec02, VIVO.title, Literal("Linear Models")))
         g.add((lec02, self.vocabulary["lecture_number"], Literal(2)))
+        g.add((lec02, self.vocabulary["provenance"], course01))
 
         lec03 = URIRef("http://example.org/lecture/Clustering_and_Mixture_Models")
         g.add((lec03, RDF.type, EXO.Lecture))
         g.add((lec03, VIVO.title, Literal("Clustering and Mixture Models")))
         g.add((lec03, self.vocabulary["lecture_number"], Literal(3)))
+        g.add((lec03, self.vocabulary["provenance"], course01))
 
         lec04 = URIRef("http://example.org/lecture/Kernel_Density")
         g.add((lec04, RDF.type, EXO.Lecture))
         g.add((lec04, VIVO.title, Literal("Kernel Density")))
         g.add((lec04, self.vocabulary["lecture_number"], Literal(4)))
+        g.add((lec04, self.vocabulary["provenance"], course01))
 
         lec05 = URIRef("http://example.org/lecture/Support_Vector_Machines")
         g.add((lec05, RDF.type, EXO.Lecture))
         g.add((lec05, VIVO.title, Literal("Support Vector Machines")))
         g.add((lec05, self.vocabulary["lecture_number"], Literal(5)))
+        g.add((lec05, self.vocabulary["provenance"], course01))
 
         wiki_page = URIRef("http://dbpedia.org/resource/Support-vector_machine")
         topic = URIRef("http://example.org/topic/Support_Vector_Machines")
