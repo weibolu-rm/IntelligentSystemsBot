@@ -10,9 +10,14 @@ source venv/bin/activate
 pip install -r requirements/requirements.txt
 ```
 
-run example program
+Download spacy model
 ```shell
-python src/rdf.py
+python -m spacy download en_core_web_sm
+```
+
+run program
+```shell
+python src/main.py
 ```
 
 ## run fuseki server
