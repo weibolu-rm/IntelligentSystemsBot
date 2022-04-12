@@ -15,7 +15,7 @@ stories:
   - intent: greet
   - action: utter_greet
   - intent: about_person
-  - action: action_person_info\
+  - action: action_person_info
 
 - story: get course description
   steps:
