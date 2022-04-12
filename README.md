@@ -1,12 +1,19 @@
 # IntelligentSystemsBot
 A chat bot developed for COMP 474 W22 (Intelligent Systems) at Concordia university
 
+## Requirements
+- Python3.8
+- latest pip
+
+
 ## Getting Started
 
 Setup virtual environment
 ```shell
-virtualenv -p python3 venv
+virtualenv -p python3.8 venv
 source venv/bin/activate
+
+pip install pip --upgrade
 pip install -r requirements/requirements.txt
 ```
 
@@ -18,6 +25,11 @@ python -m spacy download en_core_web_sm
 run program
 ```shell
 python src/main.py
+```
+## Rasa
+
+```shell
+rasa init
 ```
 
 ## run fuseki server

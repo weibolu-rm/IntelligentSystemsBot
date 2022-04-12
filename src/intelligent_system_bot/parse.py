@@ -64,6 +64,7 @@ class SpacyNlp(Base):
                 for token in doc:
                     if token.pos_ in ["PROPN", "NOUN"] and token.is_alpha and len(token) > 2:
                         self.tokens.add(token.text)
+                        # TODO: Keep source
         print(f"Done. {len(self.tokens)} unique tokens added.")
 
 

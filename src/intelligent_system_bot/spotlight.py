@@ -1,6 +1,6 @@
 from .base import Base
+from .api import ApiClient
 import os
-import requests
 import pandas as pd
 from pathlib import Path
 from tqdm import tqdm
@@ -17,7 +17,7 @@ class Spotlight(Base):
         super().__init__(
             data_dir=data_dir, res_dir=res_dir, rdf_dir=rdf_dir, is_init=is_init
         )
-        self.api = ApiClient()
+        self.api = ApiClient("https://api.dbpedia-spotlight.org/en/")
         self.entities = []
 
     def fetch_spotlight_entries(self, texts: set) -> list:
@@ -75,26 +75,3 @@ class Spotlight(Base):
         entities.to_pickle(file_path)
         print(entities)
         print(f"{len(entities)} entities saved to {file_path}.")
-
-
-class ApiClient:
-    def __init__(self) -> None:
-        self.base_url = "https://api.dbpedia-spotlight.org/en/"
-
-    @staticmethod
-    def handle_response(response, status):
-        if (len(status) == 0 and 100 < response.status_code < 400) or (
-            len(status) > 0 and response.status_code in status
-        ):
-            return response
-        else:
-            try:
-                response = response.json()
-            except Exception:
-                pass
-            raise requests.HTTPError(response)
-
-    def get(self, url, *args, **kwargs):
-        status = kwargs.pop("status", {})
-        response = requests.get(self.base_url + url, *args, **kwargs)
-        return self.handle_response(response, set() if status is None else status)
