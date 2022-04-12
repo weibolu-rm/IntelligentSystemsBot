@@ -11,9 +11,7 @@ def main():
     data_builder.run()
     preprocessor.run()
     spacy_nlp.run()
-
-    # TODO: pass spacy_nlp.tokens
-    spotlight.run({"Obama", "concordia university"})
+    spotlight.run(spacy_nlp.tokens)
 
     
 

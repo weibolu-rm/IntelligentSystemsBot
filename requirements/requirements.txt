@@ -1,5 +1,4 @@
 pandas
 rdflib
 tika
-xmltodict
 spacy
