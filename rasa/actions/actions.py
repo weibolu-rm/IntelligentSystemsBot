@@ -15,14 +15,56 @@ from rasa_sdk.executor import CollectingDispatcher
 
 class ActionPersonInfo(Action):
 
- def name(self) -> Text:
+    def name(self) -> Text:
      return "action_person_info"
 
- def run(self,
+    def run(self,
          dispatcher: CollectingDispatcher,
          tracker: Tracker,
          domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
-    dispatcher.utter_message(text=f"If you are asking about {tracker.slots['person']}, Best Human Ever!!! ;-) ")
+        dispatcher.utter_message(text=f"If you are asking about {tracker.slots['person']}, Best Human Ever!!! ;-) ")
 
-    return []
+        return []
+
+
+class ActionCourseDescription(Action):
+
+    def name(self) -> Text:
+     return "action_course_description"
+
+    def run(self,
+         dispatcher: CollectingDispatcher,
+         tracker: Tracker,
+         domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+     dispatcher.utter_message(text=f" {tracker.slots['course']} has description: insert description here ")
+
+     return []
+
+
+class ActionCourseTopic(Action):
+
+    def name(self) -> Text:
+     return "action_course_topic"
+
+    def run(self,
+         dispatcher: CollectingDispatcher,
+         tracker: Tracker,
+         domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+     dispatcher.utter_message(text=f" {tracker.slots['course']} has topics: insert description here ")
+
+     return []
+
+
+class ActionCoursesFromTopic(Action):
+
+    def name(self) -> Text:
+     return "action_courses_from_topic"
+
+    def run(self,
+         dispatcher: CollectingDispatcher,
+         tracker: Tracker,
+         domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+     dispatcher.utter_message(text=f" {tracker.slots['topic']} is covered in courses: ")
+
+     return []

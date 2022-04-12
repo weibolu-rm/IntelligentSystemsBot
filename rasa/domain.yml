@@ -9,14 +9,33 @@ intents:
   - mood_unhappy
   - bot_challenge
   - about_person
+  - about_course_topics
+  - courses_from_topic
 
 actions:
   - action_person_info
 
 entities:
   - person
+  - course
+  - topic
 
 slots:
+
+  course:
+    type: text
+    initial_value: "initial"
+    mappings:
+      -type: from_entity
+        entity: course
+
+  topic:
+    type: text
+    initial_value: "initial"
+    mappings:
+      -type: from_entity
+        entity: topic
+
   person:
     type: text
     initial_value: "initial"
