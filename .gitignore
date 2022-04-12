@@ -1,12 +1,11 @@
 venv/
 __pycache__/
 
-/* rasa */
-.rasa/
-
+/* rasa stuff */
+rasa/models
 
 /* data stuff */
-data/
+src/data
 *.ttl
 *.csv
 *.json
@@ -14,5 +13,4 @@ data/
 
 /* fuseki server */ 
 run/
-Data*/
 *.lock
