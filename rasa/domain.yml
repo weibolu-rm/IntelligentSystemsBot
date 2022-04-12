@@ -11,14 +11,17 @@ intents:
   - about_person
   - about_course_topics
   - courses_from_topic
+  - about_course
 
 actions:
   - action_person_info
+  - action_course_description
 
 entities:
-  - person
   - course
   - topic
+  - person
+  
 
 slots:
 
@@ -26,14 +29,14 @@ slots:
     type: text
     initial_value: "initial"
     mappings:
-      -type: from_entity
+      - type: from_entity
         entity: course
 
   topic:
     type: text
     initial_value: "initial"
     mappings:
-      -type: from_entity
+      - type: from_entity
         entity: topic
 
   person:
