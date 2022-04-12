@@ -16,7 +16,7 @@ intents:
 actions:
   - action_person_info
   - action_course_description
-  - action_courses_from_topic
+  - action_courses_from_topics
 
 entities:
   - course
