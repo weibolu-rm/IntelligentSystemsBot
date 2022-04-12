@@ -9,14 +9,16 @@ intents:
   - mood_unhappy
   - bot_challenge
   - about_person
-  - about_course_topics
+  - about_courses_from_topic
   - courses_from_topic
+  - about_course_topics
   - about_course
 
 actions:
   - action_person_info
   - action_course_description
-  - action_courses_from_topics
+  - action_course_topics
+  - action_courses_from_topic
 
 entities:
   - course
