@@ -11,7 +11,8 @@ from typing import Any, Text, Dict, List
 
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
-from intelligent_system_bot.sparl import Sparql
+import requests
+import json
 
 class ActionPersonInfo(Action):
 
@@ -22,7 +23,7 @@ class ActionPersonInfo(Action):
          dispatcher: CollectingDispatcher,
          tracker: Tracker,
          domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-
+         
         dispatcher.utter_message(text=f"If you are asking about {tracker.slots['person']}, Best Human Ever!!! ;-) ")
 
         return []
@@ -37,9 +38,19 @@ class ActionCourseDescription(Action):
          dispatcher: CollectingDispatcher,
          tracker: Tracker,
          domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-     dispatcher.utter_message(text=f" {tracker.slots['course']} has description: insert description here ")
+        
+        response = requests.post('http://localhost:3030/idk/query',
+        data={'query': r"""PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
+                        PREFIX vivo: <http://vivoweb.org/ontology/core#>
+                        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                        SELECT ?name WHERE {
+                        ?x vcard:givenName ?name.
+                        ?x rdf:type vivo:Student .
+                        } LIMIT 10"""})
 
-     return []
+        json_data = json.loads(response.text)
+        dispatcher.utter_message(text=f" {tracker.slots['course']} has description: insert description here {json_data['results']['bindings']} ")
+        return []
 
 
 class ActionCourseTopic(Action):
