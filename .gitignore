@@ -2,10 +2,14 @@ venv/
 __pycache__/
 
 /* rasa stuff */
-rasa/models
+**/rasa/models/
+**/rasa/.rasa/
+**/rasa/results/
 
 /* data stuff */
 src/data
+data/
+!src/rasa/data/
 *.ttl
 *.csv
 *.json
