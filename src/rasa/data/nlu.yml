@@ -87,37 +87,79 @@ nlu:
 - intent: courses_have_subject
   examples: |
     - Which courses offered by concordia has subject [Programming](topic)?
+    - What courses offered by concordia have the subject [Data Structures](topic)?
+    - Can you list the courses that are offered at concordia which have the topic [Macroeconomics](topic)
+    - List the courses offered at concordia that cover [Contruction](topic)
+    - Could you show me the courses that are offered at concordia which cover [Political Science](topic)
+    - Provide me with the courses offered at concordia that have to do with [World War 2](topic)
+    - What courses at concordia have cover the french revolution?
+    - I would like to know what courses offered by concordia cover [Urban Planning](topic)
 
 - intent: student_has_student_id
   examples: |
     - Which student has student id [40089767](studentId)?
-    - Can you tell me the student which has the student ID [40089767](studentID)?
+    - Can you tell me the student which has the student ID [40058095](studentId)?
+    - Provide me with the student that has the student id 40046046
+    - I would like to know which student corresponds to student id [40058095](studentId)?
+    - Please inform me of the student who has the student id [40078229](studentId)
+    - What student has student id (40089767)(studentId)?
 
 - intent: student_has_received_grade
   examples: |
-    - Which student has received a grade greater than value B in [COMP 474](course)
+    - Which student has received a grade greater than value B in [COMP 474](course)?
+    - Can you inform me of the student which received a grade higher than B in [COMP 425](course)?
+    - Provide me with the student who received a grade greater than B in COMP 474
+    - Please give me the student who has a higher grade than B in [COMP 425](course)
+    - Are you able to provide me with the student who has a higher grade than B in the [COMP 474](course)?
 
 - intent: lecture_covers_topic
   examples: |
     - Which lectures cover topic [Kernel Density](topic)
+    - Can you give me the lectures which cover the topic [Machine Learning](topic)?
+    - What lectures cover [Political Science](topic)?
+    - What lectures cover Political Science?
+    - Can you list the lectures which have a topic of [Computer Vision](topic)?
+    - Are you able to provide me with the lecture that cover [Ethics](topic)?
+    - Give me the lectures that are covering topics [Greek Mythology](topic)
 
 - intent: course_has_course_number
   examples: |
     - Which course has course number [474](course_number)?
-    - Can you tell me the course which corresponds to the course number [474](course_number)?
+    - Which course has course number 456?
+    - Can you tell me the course which corresponds to the course number [123](course_number)?
+    - Provide me with the course that has the course number [205](course_number)
+    - Can you provide me with the course that has course number [345](course_number)?
+    - Give me the course with course number [425](course_number)
+    - Name me the course with course number [675](course_number)
 
 - intent: topic_provenance
   examples: |
     - Where was [Support Vector Machine](topic) identified as being covered?
+    - What is the provenance of [Python](topic)?
+    - Can you provide me with the provenance of the topic [Kernel Density](topic)?
+    - Are you able to provide me with the provenance of the topic [Philosophy](topic)?
+    - Are you able to provide me with the provenance of the topic Philosophy?
+    - Give me the provenance of the topic [Geography](topic)
 
 - intent: lecture_number_of_lecture_with_title
   examples: |
-    - What is the lecture number of the lecture with title [Kernel Density](topic)?
+    - What is the lecture number of the lecture with title [Kernel Density](title)?
+    - Can you give me the lecture number for the lecture with the title [Symbolic Anthropology](title)?
+    - Can you give me the lecture number for the lecture with the title [Elements of Ethno-Linguistics](title)?
+    - Provide me with the lecture number for the lecture with the title [Support Vector Machines](title)
+    - Can you give me the lecture number of the lecture with the title [Culture and Biology: An Anthropological Perspective](title)?
+    - Can you give me the lecture number of the lecture with the title Culture and Biology: An Anthropological Perspective?
+    - Give me the lecture number of the lecture with the title [Indigenous peoples of North America](title)
 
 - intent: title_of_course_with_course_number
   examples: |
     - What is the title of the course with the course number [474](course_number)?
     - Can you tell me the title of the course with the course number [474](course_number)?
+    - Tell me the title of the course with the course number [425](course_number)
+    - Provide me with the title of the course which has the course number [225](course_number)
+    - Give me the title of the course with the course number [123](course_number)
+    - Give me the title of the course with the course numbner 455
+    - I want to know the title of the course with the course number (425)[course_number]
 
 - intent: goodbye
   examples: |

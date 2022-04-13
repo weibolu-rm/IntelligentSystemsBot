@@ -47,8 +47,16 @@ entities:
   - year
   - studentId
   - course_number
+  - title
 
 slots:
+
+  title:
+    type: text
+    initial_value: "initial"
+    mappings:
+      - type: from_entity
+        entity: title
 
   studentId:
     type: text
