@@ -20,7 +20,7 @@ class Spotlight(Base):
         self.api = ApiClient("https://api.dbpedia-spotlight.org/en/")
         self.entities = []
 
-    def fetch_spotlight_entries(self, texts: set) -> list:
+    def fetch_spotlight_entries(self, texts: set, source: Path) -> list:
         """
         Use the dbpedia spotlight API to fetch entries in dbpedia.
         We limit the amount of texts passed to the endpoint due to 414 limitations.
@@ -46,26 +46,29 @@ class Spotlight(Base):
                     "support": 20,
                 }
                 response = self.api.get("annotate?", params, headers=headers).json()
-                _entities.extend(self.process_entries(response))
+                _entities.extend(self.process_entries(response, source))
                 start += TEXTS_PER_LOOP
                 pbar.update(diff)
         return _entities
 
     @staticmethod
-    def process_entries(data):
+    def process_entries(data, source):
         return [
             {
+                "source": source,
                 "surfaceForm": r["@surfaceForm"],
                 "uri": r["@URI"],
             }
             for r in data["Resources"]
         ]
 
-    def run(self, texts: set) -> None:
-        data = self.fetch_spotlight_entries(texts)
+    def run(self, texts_mapping: dict) -> None:
+
+        data = []
+        for source in texts_mapping:
+            data.extend(self.fetch_spotlight_entries(texts_mapping[source], source))
 
         self.entities = data
-            
         self.dump()
 
     def dump(self):
