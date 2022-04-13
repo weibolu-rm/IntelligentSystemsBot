@@ -14,16 +14,16 @@ from rasa_sdk.executor import CollectingDispatcher
 import requests
 import json
 
+
 class ActionPersonInfo(Action):
 
     def name(self) -> Text:
-     return "action_person_info"
+        return "action_person_info"
 
     def run(self,
-         dispatcher: CollectingDispatcher,
-         tracker: Tracker,
-         domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-         
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         dispatcher.utter_message(text=f"If you are asking about {tracker.slots['person']}, Best Human Ever!!! ;-) ")
 
         return []
@@ -32,15 +32,14 @@ class ActionPersonInfo(Action):
 class ActionCourseDescription(Action):
 
     def name(self) -> Text:
-     return "action_course_description"
+        return "action_course_description"
 
     def run(self,
-         dispatcher: CollectingDispatcher,
-         tracker: Tracker,
-         domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         response = requests.post('http://localhost:3030/idk/query',
-        data={'query': r"""PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
+                                 data={'query': r"""PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
                         PREFIX vivo: <http://vivoweb.org/ontology/core#>
                         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                         SELECT ?name WHERE {
@@ -49,33 +48,174 @@ class ActionCourseDescription(Action):
                         } LIMIT 10"""})
 
         json_data = json.loads(response.text)
-        dispatcher.utter_message(text=f" {tracker.slots['course']} has description: insert description here {json_data['results']['bindings']} ")
+        dispatcher.utter_message(
+            text=f" {tracker.slots['course']} has description: insert description here {json_data['results']['bindings']} ")
         return []
 
 
-class ActionCourseTopic(Action):
+class ActionCourseTopics(Action):
 
     def name(self) -> Text:
-     return "action_course_topic"
+        return "action_course_topics"
 
     def run(self,
-         dispatcher: CollectingDispatcher,
-         tracker: Tracker,
-         domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-     dispatcher.utter_message(text=f" {tracker.slots['course']} has topics: insert description here ")
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=f" {tracker.slots['course']} has topics: insert description here ")
 
-     return []
+        return []
 
 
 class ActionCoursesFromTopic(Action):
 
     def name(self) -> Text:
-     return "action_courses_from_topic"
+        return "action_courses_from_topic"
 
     def run(self,
-         dispatcher: CollectingDispatcher,
-         tracker: Tracker,
-         domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-     dispatcher.utter_message(text=f" {tracker.slots['topic']} is covered in courses: ")
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=f" {tracker.slots['topic']} action_courses_from_topic")
 
-     return []
+        return []
+
+
+class ActionUniversityOfferingCoursesBasedOnTopic(Action):
+
+    def name(self) -> Text:
+        return "action_university_offering_courses_based_on_topic"
+
+    def run(self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=f" {tracker.slots['topic']} action_university_offering_courses_based_on_topic")
+
+        return []
+
+
+class ActionUniversityAfterCertainYear(Action):
+
+    def name(self) -> Text:
+        return "action_university_after_certain_year"
+
+    def run(self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=f" {tracker.slots['year']} action_university_after_certain_year")
+
+        return []
+
+
+class ActionCoursesHaveSubject(Action):
+
+    def name(self) -> Text:
+        return "action_courses_have_subject"
+
+    def run(self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=f" {tracker.slots['topic']} action_courses_have_subject")
+
+        return []
+
+
+class ActionStudentHasStudentId(Action):
+
+    def name(self) -> Text:
+        return "action_student_has_student_id"
+
+    def run(self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=f" {tracker.slots['studentId']} action_student_has_student_id")
+
+        return []
+
+
+class ActionStudentHasReceivedGrade(Action):
+
+    def name(self) -> Text:
+        return "action_student_has_received_grade"
+
+    def run(self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=f" {tracker.slots['course']} action_student_has_received_grade")
+
+        return []
+
+
+class ActionLectureCoversTopic(Action):
+
+    def name(self) -> Text:
+        return "action_lecture_covers_topic"
+
+    def run(self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=f" {tracker.slots['topic']} action_student_has_student_id")
+
+        return []
+
+
+class ActionCourseHasCourseNumber(Action):
+
+    def name(self) -> Text:
+        return "action_course_has_course_number"
+
+    def run(self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=f" {tracker.slots['course_number']} actions_course_has_course_number")
+
+        return []
+
+
+class ActionTopicProvenance(Action):
+
+    def name(self) -> Text:
+        return "action_topic_provenance"
+
+    def run(self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=f" {tracker.slots['topic']} action_topic_provenance")
+
+        return []
+
+
+class ActionLectureNumberOfLectureWithTitle(Action):
+
+    def name(self) -> Text:
+        return "action_lecture_number_of_lecture_with_title"
+
+    def run(self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=f" {tracker.slots['topic']} action_lecture_number_of_lecture_with_title")
+
+        return []
+
+
+class ActionTitleOfCourseWithCourseNumber(Action):
+
+    def name(self) -> Text:
+        return "action_title_of_course_with_course_number"
+
+    def run(self,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=f" {tracker.slots['course_number']} action_title_of_course_with_course_number")
+
+        return []

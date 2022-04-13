@@ -13,20 +13,63 @@ intents:
   - courses_from_topic
   - about_course_topics
   - about_course
+  - university_offering_courses_based_on_topic
+  - university_after_certain_year
+  - courses_have_subject
+  - student_has_student_id
+  - student_has_received_grade
+  - lecture_covers_topic
+  - course_has_course_number
+  - topic_provenance
+  - lecture_number_of_lecture_with_title
+  - title_of_course_with_course_number
 
 actions:
   - action_person_info
   - action_course_description
   - action_course_topics
   - action_courses_from_topic
+  - action_university_offering_courses_based_on_topic
+  - action_university_after_certain_year
+  - action_courses_have_subject
+  - action_student_has_student_id
+  - action_student_has_received_grade
+  - action_lecture_covers_topic
+  - action_course_has_course_number
+  - action_topic_provenance
+  - action_lecture_number_of_lecture_with_title
+  - action_title_of_course_with_course_number
 
 entities:
   - course
   - topic
   - person
-  
+  - year
+  - studentId
+  - course_number
 
 slots:
+
+  studentId:
+    type: text
+    initial_value: "initial"
+    mappings:
+      - type: from_entity
+        entity: studentId
+
+  year:
+    type: text
+    initial_value: "initial"
+    mappings:
+      - type: from_entity
+        entity: year
+
+  course_number:
+    type: text
+    initial_value: "initial"
+    mappings:
+      - type: from_entity
+        entity: course_number
 
   course:
     type: text
