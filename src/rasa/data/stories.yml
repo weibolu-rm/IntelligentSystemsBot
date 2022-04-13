@@ -71,6 +71,8 @@ stories:
   - intent: greet
   - action: utter_greet
   - intent: student_has_student_id
+    entities:
+      - entity_name: studentId
   - action: action_student_has_student_id
 
 - story: get student has received grade
