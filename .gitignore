@@ -1,6 +1,7 @@
 venv/
 __pycache__/
 
+.idea/
 /* rasa stuff */
 **/rasa/models/
 **/rasa/.rasa/
