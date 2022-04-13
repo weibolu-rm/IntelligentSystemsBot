@@ -25,11 +25,4 @@ class Sparql:
             exit()
 
     def query(self, query: str):
-        qres = self.graph.query(query)
-        for row in qres:
-            print(row)
-        return qres
-        
-
-
-
+        return self.graph.query(query)

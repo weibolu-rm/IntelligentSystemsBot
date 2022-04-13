@@ -1,0 +1,136 @@
+version: "3.1"
+
+
+stories:
+
+- story: happy path
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: mood_great
+  - action: utter_happy
+
+- story: get person info
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: about_person
+  - action: action_person_info
+
+- story: get course description
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: about_course
+  - action: action_course_description
+
+- story: get course topics
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: about_course_topics
+  - action: action_course_topics
+
+- story: get courses from topic
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: about_courses_from_topic
+  - action: action_courses_from_topic
+
+- story: get university offering courses based on topic
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: university_offering_courses_based_on_topic
+  - action: action_university_offering_courses_based_on_topic
+
+- story: get university after certain year
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: university_after_certain_year
+  - action: action_university_after_certain_year
+
+- story: get courses have subject
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: courses_have_subject
+  - action: action_courses_have_subject
+
+- story: get student has student id
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: student_has_student_id
+  - action: action_student_has_student_id
+
+- story: get student has student id
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: student_has_student_id
+  - action: action_student_has_student_id
+
+- story: get student has received grade
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: student_has_received_grade
+  - action: action_student_has_received_grade
+
+- story: get lecture covers topic
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: lecture_covers_topic
+  - action: action_lecture_covers_topic
+
+- story: get course has course number
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: course_has_course_number
+  - action: action_course_has_course_number
+
+- story: get topic provenance
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: topic_provenance
+  - action: action_topic_provenance
+
+- story: get lecture number of lecture with title
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: lecture_number_of_lecture_with_title
+  - action: action_lecture_number_of_lecture_with_title
+
+- story: get title of course with course number
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: title_of_course_with_course_number
+  - action: action_title_of_course_with_course_number
+
+- story: sad path 1
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: mood_unhappy
+  - action: utter_cheer_up
+  - action: utter_did_that_help
+  - intent: affirm
+  - action: utter_happy
+
+- story: sad path 2
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: mood_unhappy
+  - action: utter_cheer_up
+  - action: utter_did_that_help
+  - intent: deny
+  - action: utter_goodbye

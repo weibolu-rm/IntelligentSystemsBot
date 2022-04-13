@@ -1,4 +1,4 @@
-import os
+import pickle
 from rdflib import Graph, URIRef, Literal, Namespace
 from rdflib.namespace import FOAF, RDF, RDFS
 from pathlib import Path
@@ -31,7 +31,7 @@ class DataBuilder(Base):
         print("Downloading Concordia courses data..")
         subprocess.call(
             ["sh", "scripts/download-concordia-data.sh", str(self.data_dir)]
-        )
+       )
 
     def load_data(self):
         self._define_vocabulary()
@@ -380,6 +380,13 @@ class DataBuilder(Base):
         g.add((_content, RDFS.label, Literal("Content")))
         g.add((_content, RDFS.comment, Literal("Files or materials for given lecture")))
 
+        _course_outline = URIRef("http://example.org/property/courseOutline")
+        self.vocabulary["course_outline"] = _course_outline
+        g.add((_content, RDF.type, RDF.Property))
+        g.add((_content, RDFS.domain, VIVO.Course))
+        g.add((_content, RDFS.label, Literal("Course Outline")))
+        g.add((_content, RDFS.comment, Literal("Syllabus/ outline of given course.")))
+
         _video = URIRef("http://example.org/property/video")
         self.vocabulary["video"] = _video
         g.add((_video, RDFS.subPropertyOf, EXP.content))
@@ -394,7 +401,7 @@ class DataBuilder(Base):
 
         _pdf = URIRef("http://example.org/property/pdf")
         self.vocabulary["pdf"] = _pdf
-        g.add((_document, RDFS.subPropertyOf, EXP.content))
+        g.add((_document, RDFS.subPropertyOf, EXP.document))
 
         # Serialize definitions in a separate turtle file
         print("Serializing RDFS definitions")
@@ -460,44 +467,142 @@ class DataBuilder(Base):
         Temporary manual data
             TODO: use csv or somethign
         """
-        course01 = URIRef("http://example.org/course/049701")
+        course01 = URIRef("http://example.org/course/49701")
+        course02 = URIRef("http://example.org/course/5484")
         g = self.knowledge_graph
 
-        lec01 = URIRef("http://example.org/lecture/Bagging_And_Boosting")
-        g.add((lec01, RDF.type, EXO.Lecture))
-        g.add((lec01, VIVO.title, Literal("Bagging and boosting")))
-        g.add((lec01, self.vocabulary["lecture_number"], Literal(1)))
-        g.add((lec01, self.vocabulary["provenance"], course01))
+        course01_lec01 = URIRef("http://example.org/lecture/Bagging_And_Boosting")
+        g.add((course01_lec01, RDF.type, EXO.Lecture))
+        g.add((course01_lec01, VIVO.title, Literal("Bagging and boosting")))
+        g.add((course01_lec01, self.vocabulary["lecture_number"], Literal(1)))
+        g.add((course01_lec01, self.vocabulary["provenance"], course01))
 
-        lec02 = URIRef("http://example.org/lecture/Linear_Models")
-        g.add((lec02, RDF.type, EXO.Lecture))
-        g.add((lec02, VIVO.title, Literal("Linear Models")))
-        g.add((lec02, self.vocabulary["lecture_number"], Literal(2)))
-        g.add((lec02, self.vocabulary["provenance"], course01))
+        course01_lec02 = URIRef("http://example.org/lecture/Linear_Models")
+        g.add((course01_lec02, RDF.type, EXO.Lecture))
+        g.add((course01_lec02, VIVO.title, Literal("Linear Models")))
+        g.add((course01_lec02, self.vocabulary["lecture_number"], Literal(2)))
+        g.add((course01_lec02, self.vocabulary["provenance"], course01))
 
-        lec03 = URIRef("http://example.org/lecture/Clustering_and_Mixture_Models")
-        g.add((lec03, RDF.type, EXO.Lecture))
-        g.add((lec03, VIVO.title, Literal("Clustering and Mixture Models")))
-        g.add((lec03, self.vocabulary["lecture_number"], Literal(3)))
-        g.add((lec03, self.vocabulary["provenance"], course01))
+        course01_lec03 = URIRef("http://example.org/lecture/Clustering_and_Mixture_Models")
+        g.add((course01_lec03, RDF.type, EXO.Lecture))
+        g.add((course01_lec03, VIVO.title, Literal("Clustering and Mixture Models")))
+        g.add((course01_lec03, self.vocabulary["lecture_number"], Literal(3)))
+        g.add((course01_lec03, self.vocabulary["provenance"], course01))
 
-        lec04 = URIRef("http://example.org/lecture/Kernel_Density")
-        g.add((lec04, RDF.type, EXO.Lecture))
-        g.add((lec04, VIVO.title, Literal("Kernel Density")))
-        g.add((lec04, self.vocabulary["lecture_number"], Literal(4)))
-        g.add((lec04, self.vocabulary["provenance"], course01))
+        course01_lec04 = URIRef("http://example.org/lecture/Kernel_Density")
+        g.add((course01_lec04, RDF.type, EXO.Lecture))
+        g.add((course01_lec04, VIVO.title, Literal("Kernel Density")))
+        g.add((course01_lec04, self.vocabulary["lecture_number"], Literal(4)))
+        g.add((course01_lec04, self.vocabulary["provenance"], course01))
 
-        lec05 = URIRef("http://example.org/lecture/Support_Vector_Machines")
-        g.add((lec05, RDF.type, EXO.Lecture))
-        g.add((lec05, VIVO.title, Literal("Support Vector Machines")))
-        g.add((lec05, self.vocabulary["lecture_number"], Literal(5)))
-        g.add((lec05, self.vocabulary["provenance"], course01))
+        course01_lec05 = URIRef("http://example.org/lecture/Support_Vector_Machines")
+        g.add((course01_lec05, RDF.type, EXO.Lecture))
+        g.add((course01_lec05, VIVO.title, Literal("Support Vector Machines")))
+        g.add((course01_lec05, self.vocabulary["lecture_number"], Literal(5)))
+        g.add((course01_lec05, self.vocabulary["provenance"], course01))
+
+        # ...
 
         wiki_page = URIRef("http://dbpedia.org/resource/Support-vector_machine")
         topic = URIRef("http://example.org/topic/Support_Vector_Machines")
         g.add((topic, RDF.type, EXO.Topic))
-        g.add((topic, self.vocabulary["provenance"], lec05))
+        g.add((topic, self.vocabulary["provenance"], course01_lec05))
         g.add((topic, RDFS.seeAlso, wiki_page))
+
+        course02_lectures = []
+        course02_lec01 = URIRef("http://example.org/lecture/Intelligent_Systems_Introduction")
+        course02_lectures.append(course02_lec01)
+        g.add((course02_lec01, RDF.type, EXO.Lecture))
+        g.add((course02_lec01, VIVO.title, Literal("Intelligent Systems Introduction")))
+        g.add((course02_lec01, self.vocabulary["lecture_number"], Literal(1)))
+        g.add((course02_lec01, self.vocabulary["provenance"], course02))
+
+
+        course02_lec02 = URIRef("http://example.org/lecture/Knowledge_graphs")
+        course02_lectures.append(course02_lec02)
+        g.add((course02_lec02, RDF.type, EXO.Lecture))
+        g.add((course02_lec02, VIVO.title, Literal("Knowledge Graphs")))
+        g.add((course02_lec02, self.vocabulary["lecture_number"], Literal(2)))
+        g.add((course02_lec02, self.vocabulary["provenance"], course02))
+
+        course02_lec03 = URIRef("http://example.org/lecture/Vocabularies_And_Ontologies")
+        course02_lectures.append(course02_lec03)
+        g.add((course02_lec03, RDF.type, EXO.Lecture))
+        g.add((course02_lec03, VIVO.title, Literal("Vocabularies & Ontologies")))
+        g.add((course02_lec03, self.vocabulary["lecture_number"], Literal(3)))
+        g.add((course02_lec03, self.vocabulary["provenance"], course02))
+
+        course02_lec04 = URIRef("http://example.org/lecture/Knowledge_Base_Queries_And_Sparql")
+        course02_lectures.append(course02_lec04)
+        g.add((course02_lec04, RDF.type, EXO.Lecture))
+        g.add((course02_lec04, VIVO.title, Literal("Knowledge Base Queries & Sparql")))
+        g.add((course02_lec04, self.vocabulary["lecture_number"], Literal(4)))
+        g.add((course02_lec04, self.vocabulary["provenance"], course02))
+
+        course02_lec05 = URIRef("http://example.org/lecture/Knowledge_Base_Design_And_Applications")
+        course02_lectures.append(course02_lec05)
+        g.add((course02_lec05, RDF.type, EXO.Lecture))
+        g.add((course02_lec05, VIVO.title, Literal("Knowledge Base Design & Applications")))
+        g.add((course02_lec05, self.vocabulary["lecture_number"], Literal(5)))
+        g.add((course02_lec05, self.vocabulary["provenance"], course02))
+
+        course02_lec06 = URIRef("http://example.org/lecture/Recommender_Systems")
+        course02_lectures.append(course02_lec06)
+        g.add((course02_lec06, RDF.type, EXO.Lecture))
+        g.add((course02_lec06, VIVO.title, Literal("Recommender Systems")))
+        g.add((course02_lec06, self.vocabulary["lecture_number"], Literal(6)))
+        g.add((course02_lec06, self.vocabulary["provenance"], course02))
+
+        course02_lec07 = URIRef("http://example.org/lecture/Machine_Learning_For_Intelligent_Systems")
+        course02_lectures.append(course02_lec07)
+        g.add((course02_lec07, RDF.type, EXO.Lecture))
+        g.add((course02_lec07, VIVO.title, Literal("Machine Learning For Intelligent Systems")))
+        g.add((course02_lec07, self.vocabulary["lecture_number"], Literal(7)))
+        g.add((course02_lec07, self.vocabulary["provenance"], course02))
+
+        course02_lec08 = URIRef("http://example.org/lecture/Intelligent_Agents")
+        course02_lectures.append(course02_lec08)
+        g.add((course02_lec08, RDF.type, EXO.Lecture))
+        g.add((course02_lec08, VIVO.title, Literal("Intelligent Agents")))
+        g.add((course02_lec08, self.vocabulary["lecture_number"], Literal(8)))
+        g.add((course02_lec08, self.vocabulary["provenance"], course02))
+
+        course02_lec09 = URIRef("http://example.org/lecture/Text_Mining")
+        course02_lectures.append(course02_lec09)
+        g.add((course02_lec09, RDF.type, EXO.Lecture))
+        g.add((course02_lec09, VIVO.title, Literal("Text Mining")))
+        g.add((course02_lec09, self.vocabulary["lecture_number"], Literal(9)))
+        g.add((course02_lec09, self.vocabulary["provenance"], course02))
+
+        course02_lec10 = URIRef("http://example.org/lecture/Neural_Networks_And_Word_Embeddings")
+        course02_lectures.append(course02_lec10)
+        g.add((course02_lec10, RDF.type, EXO.Lecture))
+        g.add((course02_lec10, VIVO.title, Literal("Neural Networks & Word Embeddings")))
+        g.add((course02_lec10, self.vocabulary["lecture_number"], Literal(10)))
+        g.add((course02_lec10, self.vocabulary["provenance"], course02))
+
+        course02_lec11 = URIRef("http://example.org/lecture/Introduction_To_Deep_Learning")
+        course02_lectures.append(course02_lec11)
+        g.add((course02_lec11, RDF.type, EXO.Lecture))
+        g.add((course02_lec11, VIVO.title, Literal("Introduction to Deep Learning")))
+        g.add((course02_lec11, self.vocabulary["lecture_number"], Literal(11)))
+        g.add((course02_lec11, self.vocabulary["provenance"], course02))
+
+
+        # outlines
+        course01_outline = URIRef(f"file://resources/courses/COMP432/syllabus/syllabus_comp432.pdf")
+        course02_outline = URIRef(f"file://resources/courses/COMP474/syllabus/course_outline_comp474_6741_w2022.pdf")
+        g.add((course01, self.vocabulary["course_outline"], course01_outline))
+        g.add((course02, self.vocabulary["course_outline"], course02_outline))
+
+        # slides
+        for i, l in enumerate(course02_lectures):
+            if i+1 < 10:
+                content = URIRef(f"file://resources/courses/COMP474/lectures/slides0{i+1}.pdf")
+            else:
+                content = URIRef(f"file://resources/courses/COMP474/lectures/slides{i+1}.pdf")
+
+            g.add((l, self.vocabulary["pdf"], content))
 
     def _fetch_all_universities(self):
         """
@@ -547,12 +652,30 @@ class DataBuilder(Base):
     def run(self):
         self.download_concordia_course_data()
         self.load_data()
-        self.serialize_knowledge_graph()
+
+    def load_topics_from_processed(self, filepath: Path = None):
+        """
+        Load serialized linked entities
+        """
+        filepath = filepath if filepath else Path(self.data_dir / "processed" / "entities.pkl")
+
+        print("Populating knowledge base with extracted topics..")
+        g = self.knowledge_graph
+        with open(filepath, "rb") as f:
+            entities = pickle.load(f)
+            for _, row in entities.iterrows():
+                source = f"file://{str(row['source'])}"
+                g.add((URIRef(row["uri"]), RDF.type, EXO.Topic))
+                g.add((URIRef(row["uri"]), self.vocabulary["provenance"], URIRef(source)))
+        print(f"{len(entities)} topics added accross all resources.")
+
+
 
 
 def main():
     data_builder = DataBuilder()
     data_builder.run()
+    data_builder.serialize_knowledge_graph()
 
 
 if __name__ == "__main__":
