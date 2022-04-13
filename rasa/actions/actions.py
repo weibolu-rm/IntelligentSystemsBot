@@ -13,6 +13,7 @@ from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 import requests
 import json
+import pandas as pd
 
 
 class ActionPersonInfo(Action):
@@ -35,21 +36,40 @@ class ActionCourseDescription(Action):
         return "action_course_description"
 
     def run(self,
-            dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+         dispatcher: CollectingDispatcher,
+         tracker: Tracker,
+         domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        course_string = tracker.slots['course']
+
+        course_strings = course_string.split()
+        course_strings[0] = course_strings[0].upper()
+        print()
+        print()
+        print(course_strings)
+        print()
+        print()
+        filter = text=f"FILTER(?subject = \"{course_strings[0]}\"  && ?num = \"{course_strings[1]}\" )"
+        query = """SELECT DISTINCT ?subject ?num ?description WHERE {
+                            ?course vivo:description ?description.
+                            ?course rdf:type vivo:Course.
+                            ?course exp:courseNumber ?num.
+                            ?course exp:subject ?subject
+                            
+                            """ + filter + "}"
+        print()
+        print()
+        print(query)
+        print()
+        print()
+        
         response = requests.post('http://localhost:3030/idk/query',
-                                 data={'query': r"""PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
-                        PREFIX vivo: <http://vivoweb.org/ontology/core#>
-                        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                        SELECT ?name WHERE {
-                        ?x vcard:givenName ?name.
-                        ?x rdf:type vivo:Student .
-                        } LIMIT 10"""})
+        data={'query': query})
 
         json_data = json.loads(response.text)
-        dispatcher.utter_message(
-            text=f" {tracker.slots['course']} has description: insert description here {json_data['results']['bindings']} ")
+        print("_________________________________")
+        print(json_data)
+        dispatcher.utter_message(text=f" {tracker.slots['course']} has description: insert description here {json_data['results']['bindings']} ")
         return []
 
 
