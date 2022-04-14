@@ -40,7 +40,7 @@ class TikaPreprocessor(Base):
         self.preprocess_slides()
 
 
-class SpacyNlp():
+class SpacyNlp:
     def __init__(
         self,
         nlp_model: str = "en_core_web_sm",
@@ -52,17 +52,18 @@ class SpacyNlp():
     def tokenize(self, filepath: Path):
         with open(filepath) as f:
             doc = self.nlp(f.read())
-        # for token in doc.ents:
-        #     if token.label_ not in ["CARDINAL", "PERCENT", "DATE"]:
-        #         print(token.text, token.label_)
         _tokens = set()
+
         for token in doc:
-            if token.pos_ in ["PROPN", "NOUN"] and token.is_alpha and len(token) > 2:
+            if (
+                token.pos_ in ["PROPN", "NOUN"]
+                and token.is_alpha
+                and len(token) > 2
+                and token.ent_type_ not in ["PERSON", "DATE"]
+            ):
                 _tokens.add(token.text)
-                # TODO: Keep source
+
         return _tokens
-
-
 
     def run(self, mapping: dict):
 
