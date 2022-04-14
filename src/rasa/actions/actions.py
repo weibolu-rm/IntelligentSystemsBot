@@ -273,7 +273,7 @@ class ActionCourseHasCourseNumber(Action):
 
         return []
 
-
+#TODO ___________ requires title
 class ActionTopicProvenance(Action):
     def name(self) -> Text:
         return "action_topic_provenance"
@@ -288,17 +288,18 @@ class ActionTopicProvenance(Action):
         print(tracker.slots)
         qres = sparql.query(
             f"""
-                PREFIX vivo: <http://vivoweb.org/ontology/core#>
                 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                PREFIX vivo: <http://vivoweb.org/ontology/core#>
                 PREFIX exp: <http://example.org/property/>
 
-                SELECT DISTINCT ?lecture ?num
-                WHERE {{
-                    ?lecture rdf:type <http://example.org/ontology/Lecture>.
-                    ?lecture vivo:title ?name.
-                    ?lecture exp:lectureNumber ?num
-                    FILTER (?name = "{topic}")
+                SELECT ?x ?name
+                WHERE{{
+                    ?topic exp:provenance ?x.
+                    ?x vivo:title ?name.
+                FILTER (?topic = <http://example.org/topic/Support_Vector_Machines>)
                 }}
+
 
             """
         )
