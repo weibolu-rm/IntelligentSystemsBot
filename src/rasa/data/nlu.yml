@@ -91,6 +91,14 @@ nlu:
 - intent: student_has_student_id
   examples: |
     - Which student has student id [40089767](studentId)?
+<<<<<<< Updated upstream
+=======
+    - Can you tell me the student which has the student ID [40058095](studentId)?
+    - Provide me with the student that has the student id 40046046
+    - I would like to know which student corresponds to student id [40058095](studentId)?
+    - Please inform me of the student who has the student id [40078229](studentId)
+    - What student has student id (40089767)(studentId)?
+>>>>>>> Stashed changes
     - Who has the ID [40089321](studentId)?
     - Can you tell me which name is associated with student id [40912735](studentId)
     - Can you tell me the student which has the student ID [40079667](studentId)?
