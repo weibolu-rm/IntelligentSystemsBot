@@ -161,6 +161,16 @@ nlu:
     - Give me the title of the course with the course numbner 455
     - I want to know the title of the course with the course number (425)[course_number]
 
+- intent: student_is_competent_in
+  examples: |
+    - What is [Elijah](student) competent in?
+    - What courses is [Logan](student) proficient in?
+    - Can you list all of the courses that [Robert](student) is well versed in?
+    - Tell me the courses that [Amine](student) is competent in
+    - Tell me the courses that Amine is competent in
+    - Can you tell me what courses [Elijah](student) is good at ?
+    - List the courses that [Robert](student) is good at
+
 - intent: goodbye
   examples: |
     - cu
