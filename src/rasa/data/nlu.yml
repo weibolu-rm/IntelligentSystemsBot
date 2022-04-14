@@ -65,35 +65,16 @@ nlu:
     - Provide a course that covers [Mathematics](topic)
 
 
-- intent: university_offering_courses_based_on_topic
-  examples: |
-    - Which university offers a course about Artificial Intelligence?
-    - Which university offers course a on [Programming](topic)?
-    - Is there a university that offers a course about Machine Learning?
-    - What schools offer a course about [Intelligent Systems](topic)?
-    - List all universities that offer courses pertaining to [Data Structures](topic)
-    - Name all schools which offer a course about [Algorthims](topic)
-
-- intent: university_after_certain_year
-  examples: |
-    - Which universities were established after [1850](year)?
-    - Which schools were created after the year 1850?
-    - What universities were invented after 1900(year)?
-    - List all universities that were invented after year 1925(year)?
-    - What schools existed only after year 2000(year)?
-    - Can you list me all the schools that were created after the year 1935(year)?
-    - Could you list me all of the universities that were established after the year 1920(year)?
-
 - intent: courses_have_subject
   examples: |
-    - Which courses offered by concordia has subject [Programming](topic)?
-    - What courses offered by concordia have the subject [Data Structures](topic)?
-    - Can you list the courses that are offered at concordia which have the topic [Macroeconomics](topic)
-    - List the courses offered at concordia that cover [Contruction](topic)
-    - Could you show me the courses that are offered at concordia which cover [Political Science](topic)
-    - Provide me with the courses offered at concordia that have to do with [World War 2](topic)
+    - Which courses offered by concordia has subject [PHIL](subject)?
+    - What courses offered by concordia have the subject [COMM](subject)?
+    - Can you list the courses that are offered at concordia which have the subject [COMP](subject)
+    - List the courses offered at concordia that cover [MATH](subject)
+    - Could you show me the courses that are offered at concordia which cover [POLI](subject)
+    - Provide me with the courses offered at concordia that have to do with [GEO](subject)
     - What courses at concordia have cover the french revolution?
-    - I would like to know what courses offered by concordia cover [Urban Planning](topic)
+    - I would like to know what courses offered by concordia cover [COMP](subject)
 
 - intent: student_has_student_id
   examples: |

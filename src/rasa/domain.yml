@@ -13,8 +13,6 @@ intents:
   - courses_from_topic
   - about_course_topics
   - about_course
-  - university_offering_courses_based_on_topic
-  - university_after_certain_year
   - courses_have_subject
   - student_has_student_id:
       use_entities:
@@ -48,6 +46,7 @@ entities:
   - studentId
   - course
   - topic
+  - subject
   - person
   - year
   - course_number
@@ -100,10 +99,18 @@ slots:
 
   topic:
     type: text
-    initial_value: "initial"
+    initial_value: "topic"
     mappings:
       - type: from_entity
         entity: topic
+
+  subject:
+    type: text
+    initial_value: "subject"
+    mappings:
+      - type: from_entity
+        entity: subject
+
 
   person:
     type: text
