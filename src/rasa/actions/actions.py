@@ -349,8 +349,36 @@ class ActionStudentIsCompetentIn(Action):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
-        dispatcher.utter_message(
-            text=f" {tracker.slots['student']} action_student_is_competent_in"
-        )
 
+        
+        print(tracker.slots['student'])
+ 
+        qres = sparql.query(
+            f"""
+                PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
+                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                PREFIX exp: <http://example.org/property/>
+                PREFIX exo: <http://example.org/ontology/>
+                PREFIX vivo: <http://vivoweb.org/ontology/core#>
+
+                SELECT DISTINCT ?topic
+                WHERE{{
+                    ?student exp:competentIn ?topic.
+                    ?student vcard:givenName ?name.
+                    
+                FILTER (?name = "{tracker.slots['student']}") }}
+            """
+        )
+        msg = f" student is competent in: \n\n"
+
+        # TODO: should only be one
+        if len(qres) > 0:
+            for row in qres:
+                msg += row.topic + "\n"
+        else:
+            msg = f"this {tracker.slots['student']} is bung at everything"
+
+            # json_data = json.loads(response.text)
+        dispatcher.utter_message(text=msg)
         return []
