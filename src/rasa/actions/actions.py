@@ -332,10 +332,35 @@ class ActionTitleOfCourseWithCourseNumber(Action):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
-        dispatcher.utter_message(
-            text=f" {tracker.slots['course_number']} action_title_of_course_with_course_number"
-        )
+        print(tracker.slots)
+        course_number = tracker.slots['course_number']
+        qres = sparql.query(
+            f"""
+                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                PREFIX vivo: <http://vivoweb.org/ontology/core#>
+                PREFIX exp: <http://example.org/property/>
 
+                SELECT DISTINCT ?title
+                WHERE {{
+                    ?course rdf:type vivo:Course.
+                    ?course vivo:title ?title.
+                    ?course exp:courseNumber ?num.
+                FILTER (?num = "{course_number}")
+                }}
+            """
+        )
+        msg = f" The following courses have the course number ({course_number}): \n\n"
+
+        # TODO: should only be one
+        if len(qres) > 0:
+            for row in qres:
+                msg += row.title + "\n"
+        else:
+            msg = f"There are no courses with course number ({course_number}): "
+
+            # json_data = json.loads(response.text)
+        dispatcher.utter_message(text=msg)
         return []
 
 
