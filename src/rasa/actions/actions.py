@@ -337,3 +337,20 @@ class ActionTitleOfCourseWithCourseNumber(Action):
         )
 
         return []
+
+
+class ActionStudentIsCompetentIn(Action):
+    def name(self) -> Text:
+        return "action_student_is_competent_in"
+
+    def run(
+        self,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(
+            text=f" {tracker.slots['student']} action_student_is_competent_in"
+        )
+
+        return []

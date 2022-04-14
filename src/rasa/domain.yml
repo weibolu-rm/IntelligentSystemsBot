@@ -25,6 +25,7 @@ intents:
   - topic_provenance
   - lecture_number_of_lecture_with_title
   - title_of_course_with_course_number
+  - student_is_competent_in
 
 actions:
   - action_person_info
@@ -41,6 +42,7 @@ actions:
   - action_topic_provenance
   - action_lecture_number_of_lecture_with_title
   - action_title_of_course_with_course_number
+  - action_student_is_competent_in
 
 entities:
   - studentId
@@ -50,6 +52,7 @@ entities:
   - year
   - course_number
   - title
+  - student
 
 slots:
 
@@ -59,6 +62,13 @@ slots:
     mappings:
       - type: from_entity
         entity: title
+
+  student:
+    type: text
+    initial_value: "initial"
+    mappings:
+      - type: from_entity
+        entity: student
 
   studentId:
     type: text
