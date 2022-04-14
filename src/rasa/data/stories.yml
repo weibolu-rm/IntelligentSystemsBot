@@ -38,19 +38,6 @@ stories:
   - intent: about_courses_from_topic
   - action: action_courses_from_topic
 
-- story: get university offering courses based on topic
-  steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: university_offering_courses_based_on_topic
-  - action: action_university_offering_courses_based_on_topic
-
-- story: get university after certain year
-  steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: university_after_certain_year
-  - action: action_university_after_certain_year
 
 - story: get courses have subject
   steps:

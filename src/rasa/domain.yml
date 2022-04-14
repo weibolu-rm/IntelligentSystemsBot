@@ -13,8 +13,6 @@ intents:
   - courses_from_topic
   - about_course_topics
   - about_course
-  - university_offering_courses_based_on_topic
-  - university_after_certain_year
   - courses_have_subject
   - student_has_student_id:
       use_entities:

@@ -123,10 +123,39 @@ class ActionCoursesFromTopic(Action):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
-        dispatcher.utter_message(
-            text=f" {tracker.slots['topic']} action_courses_from_topic"
+        topic = tracker.slots['course']
+        print("courses given topic")
+        print(tracker.slots)
+        topic = topic.upper()
+        qres = sparql.query(
+            f"""
+                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX exp: <http://example.org/property/>
+                PREFIX vivo: <http://vivoweb.org/ontology/core#>
+                SELECT DISTINCT ?title
+                WHERE {{
+                    ?topic exp:provenance ?x.
+                    ?thing exp:document ?x.
+                    ?thing exp:provenance ?course.
+                    ?course rdf:type vivo:Course.
+                    ?course vivo:title ?title.
+                    ?topic vivo:title ?topic_title
+                    
+                filter (?topic_title = "{topic}")}}
+            """
         )
+        msg = f"The following courses cover the topic ({topic})  "
 
+        # TODO: should only be one
+        if len(qres) > 0:
+            for row in qres:
+                msg += row.title + "\n"
+
+        else:
+            msg = f"There are no courses with that cover that topic. "
+
+            # json_data = json.loads(response.text)
+        dispatcher.utter_message(text=msg)
         return []
 
 
