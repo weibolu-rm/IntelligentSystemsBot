@@ -759,6 +759,10 @@ class DataBuilder(Base):
                 g.add(
                     (URIRef(row["uri"]), self.vocabulary["provenance"], URIRef(source))
                 )
+                g.add(
+                    (URIRef(row["uri"]), VIVO.title, Literal(row["surfaceForm"].lower()))
+                )
+                
         print(f"{len(entities)} topics added accross all resources.")
 
     def inference_step(self):
