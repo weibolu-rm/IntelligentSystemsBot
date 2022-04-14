@@ -192,21 +192,7 @@ class ActionStudentHasStudentId(Action):
         domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
         
-        print()
-        print()
-        print()
-        print()
-        print("student ID action")
-        # for k in tracker.slots:
-        #     if re.match("[0-9]{8}", tracker.slots[k]):
-        #         id=tracker.slots[k]
         id = int(tracker.slots['course'])
-        print(tracker.slots)
-        print(id)
-        print()
-        print()
-        print()
-        print()
         qres = sparql.query(
             f"""
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -298,10 +284,36 @@ class ActionTopicProvenance(Action):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
-        dispatcher.utter_message(
-            text=f" {tracker.slots['topic']} action_topic_provenance"
-        )
+        topic = tracker.slots['topic']
+        print(tracker.slots)
+        qres = sparql.query(
+            f"""
+                PREFIX vivo: <http://vivoweb.org/ontology/core#>
+                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX exp: <http://example.org/property/>
 
+                SELECT DISTINCT ?lecture ?num
+                WHERE {{
+                    ?lecture rdf:type <http://example.org/ontology/Lecture>.
+                    ?lecture vivo:title ?name.
+                    ?lecture exp:lectureNumber ?num
+                    FILTER (?name = "{topic}")
+                }}
+
+            """
+        )
+        msg = f"The topic ({topic}) is covered by lecture number: "
+
+        # TODO: should only be one
+        if len(qres) > 0:
+            for row in qres:
+                msg += row.num + " of lectue: " + row.lecture + "\n"
+
+        else:
+            msg = f"The topic ({topic}) is not covered in any lectures: "
+
+            # json_data = json.loads(response.text)
+        dispatcher.utter_message(text=msg)
         return []
 
 
@@ -315,10 +327,36 @@ class ActionLectureNumberOfLectureWithTitle(Action):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
-        dispatcher.utter_message(
-            text=f" {tracker.slots['topic']} action_lecture_number_of_lecture_with_title"
-        )
+        topic = tracker.slots['topic']
+        print(tracker.slots)
+        qres = sparql.query(
+            f"""
+                PREFIX vivo: <http://vivoweb.org/ontology/core#>
+                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX exp: <http://example.org/property/>
 
+                SELECT DISTINCT ?lecture ?num
+                WHERE {{
+                    ?lecture rdf:type <http://example.org/ontology/Lecture>.
+                    ?lecture vivo:title ?name.
+                    ?lecture exp:lectureNumber ?num
+                    FILTER (?name = "{topic}")
+                }}
+
+            """
+        )
+        msg = f"The topic ({topic}) is covered by lecture number: "
+
+        # TODO: should only be one
+        if len(qres) > 0:
+            for row in qres:
+                msg += row.num + " of lectue: " + row.lecture + "\n"
+
+        else:
+            msg = f"The topic ({topic}) is not covered in any lectures: "
+
+            # json_data = json.loads(response.text)
+        dispatcher.utter_message(text=msg)
         return []
 
 
