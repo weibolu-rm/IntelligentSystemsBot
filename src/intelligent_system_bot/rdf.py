@@ -31,7 +31,7 @@ class DataBuilder(Base):
         print("Downloading Concordia courses data..")
         subprocess.call(
             ["sh", "scripts/download-concordia-data.sh", str(self.data_dir)]
-       )
+        )
 
     def load_data(self):
         self._define_vocabulary()
@@ -330,6 +330,15 @@ class DataBuilder(Base):
                 Literal("Property describing grade received from a given course."),
             )
         )
+        _term = URIRef("http://example.org/property/term")
+        self.vocabulary["term"] = _term
+        g.add((_term, RDF.type, RDF.Property))
+        g.add((_term, RDFS.domain, EXO.Grade))
+        g.add((_term, RDFS.range, RDFS.Literal))
+        g.add((_term, RDFS.label, Literal("Term of a grade")))
+        g.add(
+            (_term, RDFS.comment, Literal("The term a grade belongs to: SEASON YEAR"))
+        )
 
         ####
         # TOPIC
@@ -353,9 +362,14 @@ class DataBuilder(Base):
         g.add((_subject, RDFS.comment, Literal("Describes the subject of a course")))
 
         ####
+        # COURSE EVENTS
+        ####
+        g.add((EXO.CourseEvent, RDFS.subClassOf, VIVO.Event))
+
+        ####
         # LECTURE
         ####
-        g.add((EXO.Lecture, RDF.type, VIVO.Event))
+        g.add((EXO.Lecture, RDFS.subClassOf, EXO.CourseEvent))
         _lecture_number = URIRef("http://example.org/property/lectureNumber")
         self.vocabulary["lecture_number"] = _lecture_number
         g.add((_lecture_number, RDF.type, RDF.Property))
@@ -369,6 +383,27 @@ class DataBuilder(Base):
                 Literal("The number of the lecture in sequence with the course."),
             )
         )
+        ####
+        # LAB
+        ####
+        g.add((EXO.Lab, RDFS.subClassOf, EXO.CourseEvent))
+        _lab_number = URIRef("http://example.org/property/labNumber")
+        self.vocabulary["lab_number"] = _lab_number
+        g.add((_lab_number, RDF.type, RDF.Property))
+        g.add((_lab_number, RDFS.domain, EXO.Lecture))
+        g.add((_lab_number, RDFS.range, RDFS.Literal))
+        g.add((_lab_number, RDFS.label, Literal("Lab Number")))
+
+        ####
+        # TUTORIAL
+        ####
+        g.add((EXO.Tutorial, RDFS.subClassOf, EXO.CourseEvent))
+        _tut_number = URIRef("http://example.org/property/tutorialNumber")
+        self.vocabulary["tut_number"] = _tut_number
+        g.add((_tut_number, RDF.type, RDF.Property))
+        g.add((_tut_number, RDFS.domain, EXO.Lecture))
+        g.add((_tut_number, RDFS.range, RDFS.Literal))
+        g.add((_tut_number, RDFS.label, Literal("Tutorial Number")))
 
         ####
         # CONTENT
@@ -376,16 +411,28 @@ class DataBuilder(Base):
         _content = URIRef("http://example.org/property/content")
         self.vocabulary["content"] = _content
         g.add((_content, RDF.type, RDF.Property))
-        g.add((_content, RDFS.domain, EXO.Lecture))
+        g.add((_content, RDFS.domain, EXO.CourseEvent))
         g.add((_content, RDFS.label, Literal("Content")))
-        g.add((_content, RDFS.comment, Literal("Files or materials for given lecture")))
+        g.add(
+            (
+                _content,
+                RDFS.comment,
+                Literal("Files or materials for given course event"),
+            )
+        )
 
         _course_outline = URIRef("http://example.org/property/courseOutline")
         self.vocabulary["course_outline"] = _course_outline
-        g.add((_content, RDF.type, RDF.Property))
-        g.add((_content, RDFS.domain, VIVO.Course))
-        g.add((_content, RDFS.label, Literal("Course Outline")))
-        g.add((_content, RDFS.comment, Literal("Syllabus/ outline of given course.")))
+        g.add((_course_outline, RDF.type, RDF.Property))
+        g.add((_course_outline, RDFS.domain, VIVO.Course))
+        g.add((_course_outline, RDFS.label, Literal("Course Outline")))
+        g.add(
+            (
+                _course_outline,
+                RDFS.comment,
+                Literal("Syllabus/ outline of given course."),
+            )
+        )
 
         _video = URIRef("http://example.org/property/video")
         self.vocabulary["video"] = _video
@@ -401,7 +448,7 @@ class DataBuilder(Base):
 
         _pdf = URIRef("http://example.org/property/pdf")
         self.vocabulary["pdf"] = _pdf
-        g.add((_document, RDFS.subPropertyOf, EXP.document))
+        g.add((_pdf, RDFS.subPropertyOf, EXP.document))
 
         # Serialize definitions in a separate turtle file
         print("Serializing RDFS definitions")
@@ -452,9 +499,11 @@ class DataBuilder(Base):
         g.add((grade01, RDF.type, EXO.Grade))
         g.add((grade01, RDF.value, Literal("F")))
         g.add((grade01, self.vocabulary["from_course"], course01))
+        g.add((grade01, self.vocabulary["term"], Literal("Summer 2020")))
 
         g.add((grade02, RDF.type, EXO.Grade))
         g.add((grade02, RDF.value, Literal("A")))
+        g.add((grade02, self.vocabulary["term"], Literal("Fall 2021")))
         g.add((grade02, self.vocabulary["from_course"], course01))
 
         g.add((elijah, self.vocabulary["received_grade"], grade01))
@@ -483,7 +532,9 @@ class DataBuilder(Base):
         g.add((course01_lec02, self.vocabulary["lecture_number"], Literal(2)))
         g.add((course01_lec02, self.vocabulary["provenance"], course01))
 
-        course01_lec03 = URIRef("http://example.org/lecture/Clustering_and_Mixture_Models")
+        course01_lec03 = URIRef(
+            "http://example.org/lecture/Clustering_and_Mixture_Models"
+        )
         g.add((course01_lec03, RDF.type, EXO.Lecture))
         g.add((course01_lec03, VIVO.title, Literal("Clustering and Mixture Models")))
         g.add((course01_lec03, self.vocabulary["lecture_number"], Literal(3)))
@@ -510,13 +561,14 @@ class DataBuilder(Base):
         g.add((topic, RDFS.seeAlso, wiki_page))
 
         course02_lectures = []
-        course02_lec01 = URIRef("http://example.org/lecture/Intelligent_Systems_Introduction")
+        course02_lec01 = URIRef(
+            "http://example.org/lecture/Intelligent_Systems_Introduction"
+        )
         course02_lectures.append(course02_lec01)
         g.add((course02_lec01, RDF.type, EXO.Lecture))
         g.add((course02_lec01, VIVO.title, Literal("Intelligent Systems Introduction")))
         g.add((course02_lec01, self.vocabulary["lecture_number"], Literal(1)))
         g.add((course02_lec01, self.vocabulary["provenance"], course02))
-
 
         course02_lec02 = URIRef("http://example.org/lecture/Knowledge_graphs")
         course02_lectures.append(course02_lec02)
@@ -525,24 +577,36 @@ class DataBuilder(Base):
         g.add((course02_lec02, self.vocabulary["lecture_number"], Literal(2)))
         g.add((course02_lec02, self.vocabulary["provenance"], course02))
 
-        course02_lec03 = URIRef("http://example.org/lecture/Vocabularies_And_Ontologies")
+        course02_lec03 = URIRef(
+            "http://example.org/lecture/Vocabularies_And_Ontologies"
+        )
         course02_lectures.append(course02_lec03)
         g.add((course02_lec03, RDF.type, EXO.Lecture))
         g.add((course02_lec03, VIVO.title, Literal("Vocabularies & Ontologies")))
         g.add((course02_lec03, self.vocabulary["lecture_number"], Literal(3)))
         g.add((course02_lec03, self.vocabulary["provenance"], course02))
 
-        course02_lec04 = URIRef("http://example.org/lecture/Knowledge_Base_Queries_And_Sparql")
+        course02_lec04 = URIRef(
+            "http://example.org/lecture/Knowledge_Base_Queries_And_Sparql"
+        )
         course02_lectures.append(course02_lec04)
         g.add((course02_lec04, RDF.type, EXO.Lecture))
         g.add((course02_lec04, VIVO.title, Literal("Knowledge Base Queries & Sparql")))
         g.add((course02_lec04, self.vocabulary["lecture_number"], Literal(4)))
         g.add((course02_lec04, self.vocabulary["provenance"], course02))
 
-        course02_lec05 = URIRef("http://example.org/lecture/Knowledge_Base_Design_And_Applications")
+        course02_lec05 = URIRef(
+            "http://example.org/lecture/Knowledge_Base_Design_And_Applications"
+        )
         course02_lectures.append(course02_lec05)
         g.add((course02_lec05, RDF.type, EXO.Lecture))
-        g.add((course02_lec05, VIVO.title, Literal("Knowledge Base Design & Applications")))
+        g.add(
+            (
+                course02_lec05,
+                VIVO.title,
+                Literal("Knowledge Base Design & Applications"),
+            )
+        )
         g.add((course02_lec05, self.vocabulary["lecture_number"], Literal(5)))
         g.add((course02_lec05, self.vocabulary["provenance"], course02))
 
@@ -553,10 +617,18 @@ class DataBuilder(Base):
         g.add((course02_lec06, self.vocabulary["lecture_number"], Literal(6)))
         g.add((course02_lec06, self.vocabulary["provenance"], course02))
 
-        course02_lec07 = URIRef("http://example.org/lecture/Machine_Learning_For_Intelligent_Systems")
+        course02_lec07 = URIRef(
+            "http://example.org/lecture/Machine_Learning_For_Intelligent_Systems"
+        )
         course02_lectures.append(course02_lec07)
         g.add((course02_lec07, RDF.type, EXO.Lecture))
-        g.add((course02_lec07, VIVO.title, Literal("Machine Learning For Intelligent Systems")))
+        g.add(
+            (
+                course02_lec07,
+                VIVO.title,
+                Literal("Machine Learning For Intelligent Systems"),
+            )
+        )
         g.add((course02_lec07, self.vocabulary["lecture_number"], Literal(7)))
         g.add((course02_lec07, self.vocabulary["provenance"], course02))
 
@@ -574,34 +646,50 @@ class DataBuilder(Base):
         g.add((course02_lec09, self.vocabulary["lecture_number"], Literal(9)))
         g.add((course02_lec09, self.vocabulary["provenance"], course02))
 
-        course02_lec10 = URIRef("http://example.org/lecture/Neural_Networks_And_Word_Embeddings")
+        course02_lec10 = URIRef(
+            "http://example.org/lecture/Neural_Networks_And_Word_Embeddings"
+        )
         course02_lectures.append(course02_lec10)
         g.add((course02_lec10, RDF.type, EXO.Lecture))
-        g.add((course02_lec10, VIVO.title, Literal("Neural Networks & Word Embeddings")))
+        g.add(
+            (course02_lec10, VIVO.title, Literal("Neural Networks & Word Embeddings"))
+        )
         g.add((course02_lec10, self.vocabulary["lecture_number"], Literal(10)))
         g.add((course02_lec10, self.vocabulary["provenance"], course02))
 
-        course02_lec11 = URIRef("http://example.org/lecture/Introduction_To_Deep_Learning")
+        course02_lec11 = URIRef(
+            "http://example.org/lecture/Introduction_To_Deep_Learning"
+        )
         course02_lectures.append(course02_lec11)
         g.add((course02_lec11, RDF.type, EXO.Lecture))
         g.add((course02_lec11, VIVO.title, Literal("Introduction to Deep Learning")))
         g.add((course02_lec11, self.vocabulary["lecture_number"], Literal(11)))
         g.add((course02_lec11, self.vocabulary["provenance"], course02))
 
-
         # outlines
-        course01_outline = URIRef(f"file://resources/courses/COMP432/syllabus/syllabus_comp432.pdf")
-        course02_outline = URIRef(f"file://resources/courses/COMP474/syllabus/course_outline_comp474_6741_w2022.pdf")
+        course01_outline = URIRef(
+            f"file://resources/courses/COMP432/syllabus/syllabus_comp432.pdf"
+        )
+        course02_outline = URIRef(
+            f"file://resources/courses/COMP474/syllabus/course_outline_comp474_6741_w2022.pdf"
+        )
+        g.add((course01, self.vocabulary["content"], course01_outline))
+        g.add((course02, self.vocabulary["content"], course02_outline))
         g.add((course01, self.vocabulary["course_outline"], course01_outline))
         g.add((course02, self.vocabulary["course_outline"], course02_outline))
 
         # slides
         for i, l in enumerate(course02_lectures):
-            if i+1 < 10:
-                content = URIRef(f"file://resources/courses/COMP474/lectures/slides0{i+1}.pdf")
+            if i + 1 < 10:
+                content = URIRef(
+                    f"file://resources/courses/COMP474/lectures/slides0{i+1}.pdf"
+                )
             else:
-                content = URIRef(f"file://resources/courses/COMP474/lectures/slides{i+1}.pdf")
+                content = URIRef(
+                    f"file://resources/courses/COMP474/lectures/slides{i+1}.pdf"
+                )
 
+            g.add((l, self.vocabulary["content"], content))
             g.add((l, self.vocabulary["pdf"], content))
 
     def _fetch_all_universities(self):
@@ -657,7 +745,9 @@ class DataBuilder(Base):
         """
         Load serialized linked entities
         """
-        filepath = filepath if filepath else Path(self.data_dir / "processed" / "entities.pkl")
+        filepath = (
+            filepath if filepath else Path(self.data_dir / "processed" / "entities.pkl")
+        )
 
         print("Populating knowledge base with extracted topics..")
         g = self.knowledge_graph
@@ -666,10 +756,91 @@ class DataBuilder(Base):
             for _, row in entities.iterrows():
                 source = f"file://{str(row['source'])}"
                 g.add((URIRef(row["uri"]), RDF.type, EXO.Topic))
-                g.add((URIRef(row["uri"]), self.vocabulary["provenance"], URIRef(source)))
+                g.add(
+                    (URIRef(row["uri"]), self.vocabulary["provenance"], URIRef(source))
+                )
         print(f"{len(entities)} topics added accross all resources.")
 
+    def inference_step(self):
+        """
+        Step to create more definitions based on the rules already defined.
+        """
+        self.competent_in_inference()
 
+        # this would be better if we did it until the schema doesn't change
+        self.subclass_of_inference()
+        self.subproperty_of_inference()
+
+    def competent_in_inference(self):
+        """
+        Inference step to make students "competent in" a topic
+        """
+
+        qres = self.knowledge_graph.query(
+            """
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX exp: <http://example.org/property/>
+        PREFIX exo: <http://example.org/ontology/>
+
+        SELECT DISTINCT ?student ?topic
+        WHERE{
+            ?topic exp:provenance ?x.
+            ?event exp:pdf ?x.
+            ?event exp:provenance ?course.
+            ?student exp:receivedGrade ?grade.
+            ?grade exp:fromCourse ?course.
+            
+          FILTER (?grade != "F")
+
+        }
+        """
+        )
+
+        for row in qres:
+            self.knowledge_graph.add(
+                (row.student, self.vocabulary["competent_in"], row.topic)
+            )
+
+    def subclass_of_inference(self):
+        """
+        Inference step for subclasses
+        """
+
+        qres = self.knowledge_graph.query(
+            """
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        SELECT ?thing ?y
+        WHERE {
+            ?x rdfs:subClassOf ?y.
+            ?thing rdf:type ?x.
+        } 
+        """
+        )
+
+        for row in qres:
+            self.knowledge_graph.add((row.thing, RDF.type, row.y))
+
+    def subproperty_of_inference(self):
+        """
+        Inference step for subproperties
+        """
+
+        qres = self.knowledge_graph.query(
+            """
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        SELECT ?what ?y ?thing
+        WHERE {
+            ?x rdfs:subPropertyOf ?y.
+            ?what ?x ?thing.
+
+        } 
+        """
+        )
+
+        for row in qres:
+            self.knowledge_graph.add((row.what, row.y, row.thing))
 
 
 def main():
