@@ -283,21 +283,6 @@ class ActionLectureCoversTopic(Action):
         return []
 
 
-class ActionCourseHasCourseNumber(Action):
-    def name(self) -> Text:
-        return "action_course_has_course_number"
-
-    def run(
-        self,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> List[Dict[Text, Any]]:
-        dispatcher.utter_message(
-            text=f" {tracker.slots['course_number']} actions_course_has_course_number"
-        )
-
-        return []
 
 #TODO ___________ requires title
 class ActionTopicProvenance(Action):
