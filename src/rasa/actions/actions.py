@@ -12,6 +12,8 @@ from typing import Any, Text, Dict, List
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 import rdflib
+import re
+
 
 import os
 import sys
@@ -189,10 +191,49 @@ class ActionStudentHasStudentId(Action):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> List[Dict[Text, Any]]:
-        dispatcher.utter_message(
-            text=f" {tracker.slots['studentId']} action_student_has_student_id"
-        )
+        
+        print()
+        print()
+        print()
+        print()
+        print("student ID action")
+        # for k in tracker.slots:
+        #     if re.match("[0-9]{8}", tracker.slots[k]):
+        #         id=tracker.slots[k]
+        id = int(tracker.slots['course'])
+        print(tracker.slots)
+        print(id)
+        print()
+        print()
+        print()
+        print()
+        qres = sparql.query(
+            f"""
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX vivo: <http://vivoweb.org/ontology/core#>
+        PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
+        PREFIX exp: <http://example.org/property/>
 
+        SELECT ?student ?given_name ?last_name ?student_id
+        WHERE {{
+            ?student rdf:type vivo:Student.
+            ?student vcard:givenName ?given_name.
+            ?student vcard:familyName ?last_name.
+            ?student exp:studentId ?student_id.
+            FILTER (?student_id = {id})
+        }}
+        """
+        )
+        msg = f" Student ID: {tracker.slots['course']} belongs to: \n\n"
+        # TODO: should only be one
+        if len(qres) > 0:
+            for row in qres:
+                msg += row.given_name + " " + row.last_name
+        else:
+            msg = f"No student with ID: {tracker.slots['course']} found"
+
+            # json_data = json.loads(response.text)
+        dispatcher.utter_message(text=msg)
         return []
 
 

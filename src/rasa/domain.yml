@@ -16,7 +16,9 @@ intents:
   - university_offering_courses_based_on_topic
   - university_after_certain_year
   - courses_have_subject
-  - student_has_student_id
+  - student_has_student_id:
+      use_entities:
+        - studentId
   - student_has_received_grade
   - lecture_covers_topic
   - course_has_course_number
@@ -43,11 +45,11 @@ actions:
   - action_student_is_competent_in
 
 entities:
+  - studentId
   - course
   - topic
   - person
   - year
-  - studentId
   - course_number
   - title
   - student
@@ -70,7 +72,7 @@ slots:
 
   studentId:
     type: text
-    initial_value: "initial"
+    initial_value: "0000000"
     mappings:
       - type: from_entity
         entity: studentId
