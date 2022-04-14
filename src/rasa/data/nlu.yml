@@ -67,14 +67,14 @@ nlu:
 
 - intent: courses_have_subject
   examples: |
-    - Which courses offered by concordia has subject [Programming](topic)?
-    - What courses offered by concordia have the subject [Data Structures](topic)?
-    - Can you list the courses that are offered at concordia which have the topic [Macroeconomics](topic)
-    - List the courses offered at concordia that cover [Contruction](topic)
-    - Could you show me the courses that are offered at concordia which cover [Political Science](topic)
-    - Provide me with the courses offered at concordia that have to do with [World War 2](topic)
+    - Which courses offered by concordia has subject [PHIL](subject)?
+    - What courses offered by concordia have the subject [COMM](subject)?
+    - Can you list the courses that are offered at concordia which have the subject [COMP](subject)
+    - List the courses offered at concordia that cover [MATH](subject)
+    - Could you show me the courses that are offered at concordia which cover [POLI](subject)
+    - Provide me with the courses offered at concordia that have to do with [GEO](subject)
     - What courses at concordia have cover the french revolution?
-    - I would like to know what courses offered by concordia cover [Urban Planning](topic)
+    - I would like to know what courses offered by concordia cover [COMP](subject)
 
 - intent: student_has_student_id
   examples: |

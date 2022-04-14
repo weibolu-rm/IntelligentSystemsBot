@@ -46,6 +46,7 @@ entities:
   - studentId
   - course
   - topic
+  - subject
   - person
   - year
   - course_number
@@ -98,10 +99,18 @@ slots:
 
   topic:
     type: text
-    initial_value: "initial"
+    initial_value: "topic"
     mappings:
       - type: from_entity
         entity: topic
+
+  subject:
+    type: text
+    initial_value: "subject"
+    mappings:
+      - type: from_entity
+        entity: subject
+
 
   person:
     type: text
