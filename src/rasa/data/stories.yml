@@ -115,6 +115,13 @@ stories:
   - intent: title_of_course_with_course_number
   - action: action_title_of_course_with_course_number
 
+- story: get student is competent in
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: student_is_competent_in
+  - action: action_student_is_competent_in
+
 - story: sad path 1
   steps:
   - intent: greet
